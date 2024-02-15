@@ -17,6 +17,11 @@ public class SquareBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    public void updateColor()
+    {
         if (isLight)
         {
             render.color = ColorLight;
