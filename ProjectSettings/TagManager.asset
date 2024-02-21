@@ -3,7 +3,10 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Square
+  - Piece
+  - boardManager
   layers:
   - Default
   - TransparentFX
@@ -11,6 +14,7 @@ TagManager:
   - 
   - Water
   - UI
+  - Piece
   - 
   - 
   - 
@@ -35,8 +39,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Square
   m_SortingLayers:
   - name: Default
     uniqueID: 0
