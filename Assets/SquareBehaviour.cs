@@ -20,6 +20,11 @@ public class SquareBehaviour : MonoBehaviour
         
     }
 
+    public void lightUp(Color color)
+    {
+        render.color = color;
+    }
+
     public void updateColor()
     {
         if (isLight)

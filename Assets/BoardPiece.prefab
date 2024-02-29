@@ -108,7 +108,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b92a7da7b601205448284bc380f1f315, type: 3}
   - {fileID: 21300000, guid: 473b3f42af3b5904f98672d107efe75c, type: 3}
   - {fileID: 21300000, guid: da1fd894c1198904793ec5d9791660ca, type: 3}
-  board: {fileID: 0}
+  boardManager: {fileID: 0}
+  lightUpColor: {r: 1, g: 0.6446483, b: 0, a: 1}
+  isWhite: 0
 --- !u!50 &1864941213159339374
 Rigidbody2D:
   serializedVersion: 4

@@ -14,7 +14,13 @@ public class ManageBoard : MonoBehaviour
     public bool needBoard = true;
 
     private string[,] board = new string[8,8];
+    private SquareBehaviour[,] squares = new SquareBehaviour[8,8];
+    private bool whiteTurn = true;
     private string defStart = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private bool[] castles = new bool[4]
+    {
+        false, false, false, false
+    }; // left black, right black, left white, right white.
     void Start()
     {
         if (needBoard)
@@ -29,6 +35,22 @@ public class ManageBoard : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void lightUpSquare(Vector3 where, Color color)
+    {
+        int x = Convert.ToInt32(where.x - startpositionX);
+        int y = Convert.ToInt32(where.y - startpositionY);
+        SquareBehaviour target = squares[x, y];
+        target.lightUp(color);
+    }
+
+    public void lightDownSquare(Vector3 where)
+    {
+        int x = Convert.ToInt32(where.x - startpositionX);
+        int y = Convert.ToInt32(where.y - startpositionY);
+        SquareBehaviour target = squares[x, y];
+        target.updateColor();
     }
 
     bool isWhite(string s)
@@ -46,6 +68,8 @@ public class ManageBoard : MonoBehaviour
                 SquareBehaviour sqBehav = sq.GetComponent<SquareBehaviour>();
                 sqBehav.isLight = (i + j) % 2 == 0;
                 sqBehav.updateColor();
+
+                squares[Convert.ToInt32(i), Convert.ToInt32(j)] = sqBehav;
             }
         }
     }
@@ -64,40 +88,65 @@ public class ManageBoard : MonoBehaviour
             {'q', "queen"},
             {'k', "king"},
         };
+
+        int stage = 0;
         foreach (char c in FENinp)
         {
-            if (char.IsNumber(c))
+            if (c == ' ')
             {
-                int t = int.Parse(c.ToString());
-                while (t > 0)
+                stage++;
+                continue;
+            }
+            if (stage == 0)
+            {
+                if (char.IsNumber(c))
                 {
-                    res[y,x] = "empty";
+                    int t = int.Parse(c.ToString());
+                    while (t > 0)
+                    {
+                        res[y, x] = "empty";
+                        x++;
+                        t--;
+                    }
+                }
+                else if (pieceTypes.ContainsKey(char.ToLower(c)))
+                {
+                    tempPiece = pieceTypes[char.ToLower(c)];
+                    if (char.IsUpper(c))
+                    {
+                        tempPiece = tempPiece.ToUpper(); // black
+                    }
+                    res[y, x] = tempPiece;
                     x++;
-                    t--;
                 }
-            }
-            else if (pieceTypes.ContainsKey(char.ToLower(c)))
-            {
-                tempPiece = pieceTypes[char.ToLower(c)];
-                if (char.IsUpper(c))
+                else if (c == '/')
                 {
-                    tempPiece = tempPiece.ToUpper(); // black
+                    x = 0;
+                    y++;
                 }
-                res[y, x] = tempPiece;
-                x++;
+                if (y > 7)
+                {
+                    throw new Exception("wrong fen string");
+                    break;
+                }
             }
-            else if (c == '/')
+            if (stage == 1)
             {
-                x = 0;
-                y++;
+                if (c == 'w') whiteTurn = true;
+                else if (c == 'b') whiteTurn = false;
             }
-            else if (c == ' ') break;
-
-            if (y > 7)
-            {
-                throw new Exception("wrong fen string");
-                break;
+            if (stage == 2) 
+            { 
+                if (c == '-')
+                {
+                    castles = new bool[4] { false, false, false, false };
+                }
+                else if (c == 'q') { castles[0] = true; }
+                else if (c == 'k') { castles[1] = true; }
+                else if (c == 'Q') { castles[2] = true; }
+                else if (c == 'K') { castles[3] = true; }
             }
+            // there is other stuff in FEN, but I don't want to implement it.
         }
 
         return res;
@@ -123,4 +172,12 @@ public class ManageBoard : MonoBehaviour
             }
         }
     }
+
+    //void extractMove(Vector3 from, Vector3 to)
+    //{
+    //    int posxFrom = Convert.ToInt32(from.x + startpositionX);
+    //    int posyFrom = Convert.ToInt32(from.y + startpositionY);
+    //    int posxTo = Convert.ToInt32(to.x + startpositionX);
+    //    int posyTo = Convert.ToInt32(to.y + startpositionY);
+    //}
 }
