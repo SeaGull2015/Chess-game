@@ -43,7 +43,7 @@ public class ManageBoard : MonoBehaviour
     {
         int x = Convert.ToInt32(where.x - startpositionX);
         int y = Convert.ToInt32(where.y - startpositionY);
-        SquareBehaviour target = squares[y, x];
+        SquareBehaviour target = squares[x, y];
         target.lightUp(color);
     }
 
@@ -51,7 +51,7 @@ public class ManageBoard : MonoBehaviour
     {
         int x = Convert.ToInt32(where.x - startpositionX);
         int y = Convert.ToInt32(where.y - startpositionY);
-        SquareBehaviour target = squares[y, x];
+        SquareBehaviour target = squares[x, y];
         target.updateColor();
     }
 
@@ -66,8 +66,8 @@ public class ManageBoard : MonoBehaviour
         {
             for (int j = 0; j < 8; j++)
             {
-                GameObject sq = Instantiate(square, transform.position + new Vector3(i + startpositionX, j + startpositionY, +1), transform.rotation);
-                sq.name = "square " + (i+j).ToString();
+                GameObject sq = Instantiate(square, transform.position + new Vector3(j + startpositionX, i + startpositionY, +1), transform.rotation);
+                sq.name = "square " + (i*8+j).ToString();
                 SquareBehaviour sqBehav = sq.GetComponent<SquareBehaviour>();
                 sqBehav.isLight = (i + j) % 2 == 0;
                 sqBehav.updateColor();
@@ -107,7 +107,7 @@ public class ManageBoard : MonoBehaviour
                     int t = int.Parse(c.ToString());
                     while (t > 0)
                     {
-                        res[y, x] = "empty";
+                        res[x, y] = "empty";
                         x++;
                         t--;
                     }
@@ -119,7 +119,7 @@ public class ManageBoard : MonoBehaviour
                     {
                         tempPiece = tempPiece.ToUpper(); // black
                     }
-                    res[y, x] = tempPiece;
+                    res[x, y] = tempPiece;
                     x++;
                 }
                 else if (c == '/')
@@ -162,9 +162,9 @@ public class ManageBoard : MonoBehaviour
             for(int j = 0; j < tboard.GetLength(1); j++)
             {
                 if (tboard[j, i] == "empty") continue;
-                GameObject piece = Instantiate(boardPiece, transform.position + new Vector3(i + startpositionX, j + startpositionY), transform.rotation);
+                GameObject piece = Instantiate(boardPiece, transform.position + new Vector3(j + startpositionX, i + startpositionY), transform.rotation);
                 PieceBehaviour pcBehaviour = piece.GetComponent<PieceBehaviour>();
-                pieces[Convert.ToInt32(j), Convert.ToInt32(i)] = pcBehaviour;
+                pieces[j, i] = pcBehaviour;
                 if (isWhite(tboard[j, i]))
                 {
                     pcBehaviour.isWhite = true;
@@ -201,8 +201,11 @@ public class ManageBoard : MonoBehaviour
         int posxTo = Convert.ToInt32(to.x - startpositionX);
         int posyTo = Convert.ToInt32(to.y - startpositionY);
 
-        pieces[posyFrom, posxFrom] = null;
-        pieces[posyTo, posxTo] = who;
+        pieces[posxFrom, posyFrom] = null;
+        pieces[posxTo, posyTo] = who;
+
+        pieces[posxTo, posyTo].setColor(Color.red);
+        squares[posxTo, posyTo].lightUp(Color.red);
 
         nextMove();
     }

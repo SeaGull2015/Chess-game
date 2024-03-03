@@ -64,7 +64,7 @@ public class PieceBehaviour : MonoBehaviour
     {
         if (canMove)
         {
-            if (isCollided)
+            if (isCollided && (collisionPiece.transform.position - new Vector3(0, 0, 1) != initPoint))
             {
                 transform.position = collisionPiece.transform.position - new Vector3(0, 0, 1);
                 move(initPoint, transform.position);
