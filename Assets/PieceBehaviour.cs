@@ -13,6 +13,7 @@ public class PieceBehaviour : MonoBehaviour
     public GameObject boardManager;
     public Color lightUpColor = new Color(20, 20, 20);
     public bool isWhite;
+    public bool canMove = true;
     private ManageBoard board;
     private string figureType = "pawn";
     private string[] allowedTypes = { "pawn", "knight", "bishop", "rook", "queen", "king" }; // from https://www.chess.com/terms/chess-pieces
@@ -26,6 +27,7 @@ public class PieceBehaviour : MonoBehaviour
     {
         boardManager = GameObject.FindWithTag("boardManager"); ;
         board = boardManager.GetComponent<ManageBoard>();
+        name = isWhite ? figureType : figureType.ToUpper();
     }
 
     // Update is called once per frame
@@ -45,29 +47,36 @@ public class PieceBehaviour : MonoBehaviour
     }
     void OnMouseDown()
     {
-        initPoint = transform.position;
-        clickDragOffset = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-        board.lightUpSquare(initPoint, lightUpColor); // it is pretty illogical that pawn defines what colour the square should be, not the board manager, but I don't want to breed light up functions for different cases
+        if (canMove)
+        {
+            initPoint = transform.position;
+            clickDragOffset = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+            board.lightUpSquare(initPoint, lightUpColor); // it is pretty illogical that pawn defines what colour the square should be, not the board manager, but I don't want to breed light up functions for different cases
+        }
     }
 
     private void OnMouseDrag()
     {
-        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) - clickDragOffset;
+        if (canMove) transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) - clickDragOffset;
     }
 
     private void OnMouseUp()
     {
-        if (isCollided)
+        if (canMove)
         {
-            transform.position = collisionPiece.transform.position - new Vector3(0,0,1);
-            eat();
-            move();
+            if (isCollided)
+            {
+                transform.position = collisionPiece.transform.position - new Vector3(0, 0, 1);
+                move(initPoint, transform.position);
+                eat();
+
+            }
+            else
+            {
+                transform.position = initPoint;
+            }
+            board.lightDownSquare(initPoint);
         }
-        else
-        {
-            transform.position = initPoint;
-        }
-        board.lightDownSquare(initPoint);
     }
 
     private void eat()
@@ -85,8 +94,9 @@ public class PieceBehaviour : MonoBehaviour
         }
     }
 
-    private void move()
+    private void move(Vector3 from, Vector3 to)
     {
+        board.extractMove(from, to, this);
         return;
     }
 
@@ -106,7 +116,11 @@ public class PieceBehaviour : MonoBehaviour
         else { return false; }
     }
 
-    void updateSprite()
+    public void setColor(Color color)
+    {
+        thisSpriteRenderer.color = color;
+    }
+    private void updateSprite()
     {
         thisSpriteRenderer.sprite = sprites[Array.FindIndex(allowedTypes, x => x == figureType)];
         if (isWhite)

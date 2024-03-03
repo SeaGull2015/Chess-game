@@ -12,9 +12,11 @@ public class ManageBoard : MonoBehaviour
     public float startpositionX = -3.5f;
     public float startpositionY = -3.5f;
     public bool needBoard = true;
+    //public bool isPlayerWhite = true;
 
     private string[,] board = new string[8,8];
     private SquareBehaviour[,] squares = new SquareBehaviour[8,8];
+    private PieceBehaviour[,] pieces = new PieceBehaviour[8,8];
     private bool whiteTurn = true;
     private string defStart = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     private bool[] castles = new bool[4]
@@ -41,7 +43,7 @@ public class ManageBoard : MonoBehaviour
     {
         int x = Convert.ToInt32(where.x - startpositionX);
         int y = Convert.ToInt32(where.y - startpositionY);
-        SquareBehaviour target = squares[x, y];
+        SquareBehaviour target = squares[y, x];
         target.lightUp(color);
     }
 
@@ -49,7 +51,7 @@ public class ManageBoard : MonoBehaviour
     {
         int x = Convert.ToInt32(where.x - startpositionX);
         int y = Convert.ToInt32(where.y - startpositionY);
-        SquareBehaviour target = squares[x, y];
+        SquareBehaviour target = squares[y, x];
         target.updateColor();
     }
 
@@ -60,16 +62,17 @@ public class ManageBoard : MonoBehaviour
 
     void createBoard()
     {
-        for (float i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
-            for (float j = 0; j < 8; j++)
+            for (int j = 0; j < 8; j++)
             {
                 GameObject sq = Instantiate(square, transform.position + new Vector3(i + startpositionX, j + startpositionY, +1), transform.rotation);
+                sq.name = "square " + (i+j).ToString();
                 SquareBehaviour sqBehav = sq.GetComponent<SquareBehaviour>();
                 sqBehav.isLight = (i + j) % 2 == 0;
                 sqBehav.updateColor();
 
-                squares[Convert.ToInt32(i), Convert.ToInt32(j)] = sqBehav;
+                squares[j, i] = sqBehav;
             }
         }
     }
@@ -158,26 +161,49 @@ public class ManageBoard : MonoBehaviour
         {
             for(int j = 0; j < tboard.GetLength(1); j++)
             {
-                if (tboard[i, j] == "empty") continue;
-                GameObject piece = Instantiate(boardPiece, transform.position + new Vector3(j + startpositionX, i + startpositionY), transform.rotation);
+                if (tboard[j, i] == "empty") continue;
+                GameObject piece = Instantiate(boardPiece, transform.position + new Vector3(i + startpositionX, j + startpositionY), transform.rotation);
                 PieceBehaviour pcBehaviour = piece.GetComponent<PieceBehaviour>();
-                if (isWhite(tboard[i, j]))
+                pieces[Convert.ToInt32(j), Convert.ToInt32(i)] = pcBehaviour;
+                if (isWhite(tboard[j, i]))
                 {
                     pcBehaviour.isWhite = true;
                 }
-                if (!pcBehaviour.setType(tboard[i, j].ToLower()))
+                if (!pcBehaviour.setType(tboard[j, i].ToLower()))
                 {
                     throw new Exception("bad type when putting down pieces");
                 }
             }
         }
+        nextMove();
     }
 
-    //void extractMove(Vector3 from, Vector3 to)
-    //{
-    //    int posxFrom = Convert.ToInt32(from.x + startpositionX);
-    //    int posyFrom = Convert.ToInt32(from.y + startpositionY);
-    //    int posxTo = Convert.ToInt32(to.x + startpositionX);
-    //    int posyTo = Convert.ToInt32(to.y + startpositionY);
-    //}
+    void nextMove()
+    {
+        foreach (var piece in pieces)
+        {
+            if (piece == null) continue;
+            if (piece.isWhite == whiteTurn /*&& piece.isWhite == isPlayerWhite*/) {
+                piece.canMove = true;
+            }
+            else
+            {
+                piece.canMove = false;
+            }
+        }
+        whiteTurn = !whiteTurn;
+    }
+
+    public void extractMove(Vector3 from, Vector3 to, PieceBehaviour who)
+    {
+        int posxFrom = Convert.ToInt32(from.x - startpositionX);
+        int posyFrom = Convert.ToInt32(from.y - startpositionY);
+        int posxTo = Convert.ToInt32(to.x - startpositionX);
+        int posyTo = Convert.ToInt32(to.y - startpositionY);
+
+        pieces[posyFrom, posxFrom] = null;
+        pieces[posyTo, posxTo] = who;
+
+        nextMove();
+    }
 }
