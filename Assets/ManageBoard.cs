@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -62,17 +61,17 @@ public class ManageBoard : MonoBehaviour
 
     void createBoard()
     {
-        for (int i = 0; i < 8; i++)
+        for (int tY = 0; tY < 8; tY++)
         {
-            for (int j = 0; j < 8; j++)
+            for (int tX = 0; tX < 8; tX++)
             {
-                GameObject sq = Instantiate(square, transform.position + new Vector3(j + startpositionX, i + startpositionY, +1), transform.rotation);
-                sq.name = "square " + (i*8+j).ToString();
+                GameObject sq = Instantiate(square, transform.position + new Vector3(tX + startpositionX, tY + startpositionY, +1), transform.rotation);
+                sq.name = "square " + (tY*8+tX).ToString();
                 SquareBehaviour sqBehav = sq.GetComponent<SquareBehaviour>();
-                sqBehav.isLight = (i + j) % 2 == 0;
+                sqBehav.isLight = (tY + tX) % 2 == 0;
                 sqBehav.updateColor();
 
-                squares[j, i] = sqBehav;
+                squares[tX, tY] = sqBehav;
             }
         }
     }
@@ -130,7 +129,6 @@ public class ManageBoard : MonoBehaviour
                 if (y > 7)
                 {
                     throw new Exception("wrong fen string");
-                    break;
                 }
             }
             if (stage == 1)
@@ -157,19 +155,19 @@ public class ManageBoard : MonoBehaviour
 
     void putPieces(string[,] tboard)
     {
-        for (int i = 0; i < tboard.GetLength(0); i++)
+        for (int tY = 0; tY < tboard.GetLength(0); tY++)
         {
-            for(int j = 0; j < tboard.GetLength(1); j++)
+            for(int tX = 0; tX < tboard.GetLength(1); tX++)
             {
-                if (tboard[j, i] == "empty") continue;
-                GameObject piece = Instantiate(boardPiece, transform.position + new Vector3(j + startpositionX, i + startpositionY), transform.rotation);
+                if (tboard[tX, tY] == "empty") continue;
+                GameObject piece = Instantiate(boardPiece, transform.position + new Vector3(tX + startpositionX, tY + startpositionY), transform.rotation);
                 PieceBehaviour pcBehaviour = piece.GetComponent<PieceBehaviour>();
-                pieces[j, i] = pcBehaviour;
-                if (isWhite(tboard[j, i]))
+                pieces[tX, tY] = pcBehaviour;
+                if (isWhite(tboard[tX, tY]))
                 {
                     pcBehaviour.isWhite = true;
                 }
-                if (!pcBehaviour.setType(tboard[j, i].ToLower()))
+                if (!pcBehaviour.setType(tboard[tX, tY].ToLower()))
                 {
                     throw new Exception("bad type when putting down pieces");
                 }
