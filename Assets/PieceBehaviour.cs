@@ -11,7 +11,6 @@ public class PieceBehaviour : MonoBehaviour
     public SpriteRenderer thisSpriteRenderer;
     public Sprite[] sprites;
     public GameObject boardManager;
-    public Color lightUpColor = new Color(20, 20, 20);
     public bool isWhite;
     public bool canMove = true;
     private ManageBoard board;
@@ -51,7 +50,7 @@ public class PieceBehaviour : MonoBehaviour
         {
             initPoint = transform.position;
             clickDragOffset = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            board.lightUpSquare(initPoint, lightUpColor); // it is pretty illogical that pawn defines what colour the square should be, not the board manager, but I don't want to breed light up functions for different cases
+            board.lightUpSquares(initPoint); // it is pretty illogical that pawn defines what colour the square should be, not the board manager, but I don't want to breed light up functions for different cases
         }
     }
 
@@ -75,7 +74,7 @@ public class PieceBehaviour : MonoBehaviour
             {
                 transform.position = initPoint;
             }
-            board.lightDownSquare(initPoint);
+            board.lightDownSquares(initPoint);
         }
     }
 

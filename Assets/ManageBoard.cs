@@ -1,21 +1,37 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
 public class ManageBoard : MonoBehaviour
 {
+    struct Move
+    {
+        public int dx;
+        public int dy;
+        public Move(int tdx, int tdy)
+        {
+            dx = tdx;
+            dy = tdy;
+        }
+    }
     // Start is called before the first frame update
     public GameObject square;
     public GameObject boardPiece;
     public float startpositionX = -3.5f;
     public float startpositionY = -3.5f;
     public bool needBoard = true;
+    public Color lightSquareUpColorSelfy = new Color(20, 20, 20);
+    public Color lightSquareUpColorEmpty = new Color(20, 20, 20);
+    public Color lightSquareUpColorEnemy = new Color(20, 20, 20);
     //public bool isPlayerWhite = true;
 
     private string[,] board = new string[8,8];
     private SquareBehaviour[,] squares = new SquareBehaviour[8,8];
     private PieceBehaviour[,] pieces = new PieceBehaviour[8,8];
+    private List<Move>[,] moves = new List<Move>[8,8];
     private bool whiteTurn = true;
     private string defStart = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     private bool[] castles = new bool[4]
@@ -38,20 +54,28 @@ public class ManageBoard : MonoBehaviour
 
     }
 
-    public void lightUpSquare(Vector3 where, Color color)
+
+
+    public void lightUpSquares(Vector3 where)
     {
         int x = Convert.ToInt32(where.x - startpositionX);
         int y = Convert.ToInt32(where.y - startpositionY);
-        SquareBehaviour target = squares[x, y];
-        target.lightUp(color);
+        squares[x, y].lightUp(lightSquareUpColorSelfy);
+        foreach (var move in moves[x, y]) {
+            if (board[x + move.dx, y + move.dy] == "empty") squares[x + move.dx, y + move.dy].lightUp(lightSquareUpColorEmpty);
+            else squares[x + move.dx, y + move.dy].lightUp(lightSquareUpColorEnemy);
+        }
     }
 
-    public void lightDownSquare(Vector3 where)
+    public void lightDownSquares(Vector3 where)
     {
         int x = Convert.ToInt32(where.x - startpositionX);
         int y = Convert.ToInt32(where.y - startpositionY);
-        SquareBehaviour target = squares[x, y];
-        target.updateColor();
+        squares[x, y].updateColor();
+        foreach (var move in moves[x, y])
+        {
+            squares[x + move.dx, y + move.dy].updateColor();
+        }
     }
 
     bool isWhite(string s)
@@ -189,6 +213,20 @@ public class ManageBoard : MonoBehaviour
                 piece.canMove = false;
             }
         }
+        for (int i = 0; i < 7; i++) // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
+        {
+            for (int j = 0; j < 7; j++) {
+                if (isWhite(board[i, j]) == whiteTurn)
+                {
+                    moves[i, j] = getMoves(i, j);
+                }
+                else
+                {
+                    moves[i, j] = new List<Move>();
+                }
+            }
+        }
+
         whiteTurn = !whiteTurn;
     }
 
@@ -202,9 +240,96 @@ public class ManageBoard : MonoBehaviour
         pieces[posxFrom, posyFrom] = null;
         pieces[posxTo, posyTo] = who;
 
-        pieces[posxTo, posyTo].setColor(Color.red);
-        squares[posxTo, posyTo].lightUp(Color.red);
+        board[posxTo, posyTo] = board[posxFrom, posyFrom];
+        board[posxFrom, posyFrom] = "empty";
+        //pieces[posxTo, posyTo].setColor(Color.red);
+        //squares[posxTo, posyTo].lightUp(Color.red);
 
         nextMove();
+    }
+
+    private Move directMove(int distance, int dir) // this kinda sucks
+    {
+        if (dir == 0) return new Move(0, distance);
+        if (dir == 1) return new Move(distance, 0);
+        if (dir == 2) return new Move(0, -distance);
+        if (dir == 3) return new Move(-distance, 0);
+        if (dir == 4) return new Move(distance, distance);
+        if (dir == 5) return new Move(distance, -distance);
+        if (dir == 6) return new Move(-distance, -distance);
+        if (dir == 7) return new Move(distance, -distance);
+        else throw new Exception("directMove() wrong input dir");
+    }
+
+    private List<Move> getMoves(int x, int y)
+    {
+        string type = board[x, y];
+        type = type.ToLower();
+        string[] sliders = { "bishop", "queen", "rook" };
+        if (sliders.Contains(type))
+        {
+            return getSlidingMoves(x, y);
+        }
+        else /*throw new Exception("getMoves() bad type");*/ return new List<Move>();
+    }
+
+    private List<Move> getSlidingMoves(int x, int y)
+    {
+        List<Move> res = new List<Move>();
+        string type = board[x, y];
+        bool thisWhite = isWhite(type);
+        type = type.ToLower();
+
+        int[] dirs = dirLen(x, y);
+
+        if (type == "bishop" || type == "queen") // the following code somewhat sucks, but as of now I don't have ideas how to implement it better
+        {
+            for (int i = 4; i < 8; i++)
+            {
+                for (int j = 1; j < dirs[i]; j++)
+                {
+                    Move tMove = directMove(j, i);
+                    if (board[x + tMove.dx, y + tMove.dy] == "empty") res.Add(tMove);
+                    else if (isWhite(board[x + tMove.dx, y + tMove.dy]) == thisWhite) break;
+                    else if (isWhite(board[x + tMove.dx, y + tMove.dy]) != thisWhite)
+                    {
+                        res.Add(directMove(j, i));
+                        break;
+                    }
+                }
+            }
+        }
+        if (type == "rook" || type == "queen")
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                for (int j = 1; j < dirs[i]; j++) {
+                    Move tMove = directMove(j, i);
+                    if (board[x + tMove.dx, y + tMove.dy] == "empty") res.Add(tMove);
+                    else if (isWhite(board[x + tMove.dx, y + tMove.dy]) == thisWhite) break;
+                    else if (isWhite(board[x + tMove.dx, y + tMove.dy]) != thisWhite)
+                    {
+                        res.Add(directMove(j, i));
+                        break;
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+    
+    private int[] dirLen(int x, int y)
+    {
+        int[] res = new int[8];
+        res[0] = 7-y; // north
+        res[1] = 7-x; // east
+        res[2] = y; // south
+        res[3] = x; // west
+        res[4] = 7 - (x > y ? x : y); // NE: 7 - max(x, y)
+        res[5] = (x > (7 - y) ? 7 - y : x); // SE: min(x, 7 - y) - if something is wrong, SE and NW might be swapped
+        res[6] = (x > y ? y : x); // SW - just minimum between x and y
+        res[7] = ((7 - x) > y ? y : 7 - x); // NW - min(7 - x, y)
+        return res;
     }
 }
