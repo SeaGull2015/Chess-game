@@ -266,10 +266,8 @@ public class ManageBoard : MonoBehaviour
         string type = board[x, y];
         type = type.ToLower();
         string[] sliders = { "bishop", "queen", "rook" };
-        if (sliders.Contains(type))
-        {
-            return getSlidingMoves(x, y);
-        }
+        if (sliders.Contains(type)) return getSlidingMoves(x, y);
+        else if (type == "pawn") return getPawnMoves(x, y);
         else /*throw new Exception("getMoves() bad type");*/ return new List<Move>();
     }
 
@@ -319,6 +317,39 @@ public class ManageBoard : MonoBehaviour
         return res;
     }
     
+    private List<Move> getPawnMoves(int x, int y)
+    {
+        List<Move> res = new List<Move>();
+        bool thisWhite = isWhite(board[x, y]);
+        int dir = thisWhite ? 1 : -1;
+        int yLim = thisWhite ? 7 : 0;
+
+        if (y != yLim && board[x, y + dir] == "empty")
+        {
+            res.Add(new Move(0, dir));
+        }
+
+        if (y != yLim && x < 7 && board[x + 1, y + dir] != "empty" && thisWhite != isWhite(board[x + 1, y + dir])) // I would rather have y < 7 or y > 0, but it would be ugly, so y != yLim
+        {
+            res.Add(new Move(1, dir));
+        }
+        if (y != yLim && x > 0 && board[x - 1, y + dir] != "empty" && thisWhite != isWhite(board[x - 1, y + dir]))
+        {
+            res.Add(new Move(-1, dir));
+        }
+
+        if (false) // TODO: insert en passant here
+        {
+
+        }
+        if (false) // TODO: insert upgrade behaviour here
+        {
+
+        }
+
+
+        return res;
+    }
     private int[] dirLen(int x, int y)
     {
         int[] res = new int[8];
