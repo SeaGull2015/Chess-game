@@ -269,6 +269,7 @@ public class ManageBoard : MonoBehaviour
         if (sliders.Contains(type)) return getSlidingMoves(x, y);
         else if (type == "pawn") return getPawnMoves(x, y);
         else if (type == "king") return getKingMoves(x, y);
+        else if (type == "knight") return getKnightMoves(x, y);
         else /*throw new Exception("getMoves() bad type");*/ return new List<Move>();
     }
 
@@ -354,40 +355,21 @@ public class ManageBoard : MonoBehaviour
 
     private List<Move> getKingMoves(int x, int y)
     {
+        int[] dx = { -1, -1, -1, 0, 0, 1, 1, 1 };
+        int[] dy = { -1, 0, 1, -1, 1, -1, 0, 1 };
+
         List<Move> res = new List<Move>();
         bool thisWhite = isWhite(board[x, y]);
 
-        if (x < 7 && board[x + 1, y] == "empty" || x < 7 && isWhite(board[x + 1, y]) != thisWhite) // this sucks so much!!! (but it works fine)
+        for (int i = 0; i < 8; i++)
         {
-            res.Add(new Move(+1, 0));
-        }
-        if (x < 7 && y < 7 && board[x + 1, y + 1] == "empty" || x < 7 && y < 7 && isWhite(board[x + 1, y + 1]) != thisWhite)
-        {
-            res.Add(new Move(+1, +1));
-        }
-        if (x < 7 && y > 0 && board[x + 1, y - 1] == "empty" || x < 7 && y > 0 && isWhite(board[x + 1, y - 1]) != thisWhite)
-        {
-            res.Add(new Move(+1, -1));
-        }
-        if (y < 7 && board[x, y + 1] == "empty" || y < 7 && isWhite(board[x, y + 1]) != thisWhite)
-        {
-            res.Add(new Move(0, +1));
-        }
-        if (y > 0 && board[x, y - 1] == "empty" || y > 0 && isWhite(board[x, y - 1]) != thisWhite)
-        {
-            res.Add(new Move(0, -1));
-        }
-        if (x > 0 && y < 7 && board[x - 1, y + 1] == "empty" || x > 0 && y < 7 && isWhite(board[x - 1, y + 1]) != thisWhite)
-        {
-            res.Add(new Move(-1, +1));
-        }
-        if (x > 0 && board[x - 1, y] == "empty" || x > 0 && isWhite(board[x - 1, y]) != thisWhite)
-        {
-            res.Add(new Move(-1, 0));
-        }
-        if (x > 0 && y > 0 && board[x - 1, y - 1] == "empty" || x > 0 && y > 0 && isWhite(board[x - 1, y - 1]) != thisWhite)
-        {
-            res.Add(new Move(-1, -1));
+            if (x + dx[i] >= 0 && x + dx[i] < 8 &&
+                y + dy[i] >= 0 && y + dy[i] < 8 &&
+                (board[x + dx[i], y + dy[i]] == "empty" ||
+                isWhite(board[x + dx[i], y + dy[i]]) != thisWhite))
+            {
+                res.Add(new Move(dx[i], dy[i]));
+            }
         }
 
         return res;
@@ -398,37 +380,18 @@ public class ManageBoard : MonoBehaviour
         List<Move> res = new List<Move>();
         bool thisWhite = isWhite(board[x, y]);
 
-        if (x < 7 && board[x + 1, y] == "empty" || x < 7 && isWhite(board[x + 1, y]) != thisWhite) // this sucks so much!!! (but it works fine)
+        int[] dx = { -2, -1, 1, 2, 2, 1, -1, -2 };
+        int[] dy = { -1, -2, -2, -1, 1, 2, 2, 1 };
+
+        for (int i = 0; i < 8; i++)
         {
-            res.Add(new Move(+1, 0));
-        }
-        if (x < 7 && y < 7 && board[x + 1, y + 1] == "empty" || x < 7 && y < 7 && isWhite(board[x + 1, y + 1]) != thisWhite)
-        {
-            res.Add(new Move(+1, +1));
-        }
-        if (x < 7 && y > 0 && board[x + 1, y - 1] == "empty" || x < 7 && y > 0 && isWhite(board[x + 1, y - 1]) != thisWhite)
-        {
-            res.Add(new Move(+1, -1));
-        }
-        if (y < 7 && board[x, y + 1] == "empty" || y < 7 && isWhite(board[x, y + 1]) != thisWhite)
-        {
-            res.Add(new Move(0, +1));
-        }
-        if (y > 0 && board[x, y - 1] == "empty" || y > 0 && isWhite(board[x, y - 1]) != thisWhite)
-        {
-            res.Add(new Move(0, -1));
-        }
-        if (x > 0 && y < 7 && board[x - 1, y + 1] == "empty" || x > 0 && y < 7 && isWhite(board[x - 1, y + 1]) != thisWhite)
-        {
-            res.Add(new Move(-1, +1));
-        }
-        if (x > 0 && board[x - 1, y] == "empty" || x > 0 && isWhite(board[x - 1, y]) != thisWhite)
-        {
-            res.Add(new Move(-1, 0));
-        }
-        if (x > 0 && y > 0 && board[x - 1, y - 1] == "empty" || x > 0 && y > 0 && isWhite(board[x - 1, y - 1]) != thisWhite)
-        {
-            res.Add(new Move(-1, -1));
+            if (x + dx[i] >= 0 && x + dx[i] < 8 &&
+                y + dy[i] >= 0 && y + dy[i] < 8 &&
+                (board[x + dx[i], y + dy[i]] == "empty" ||
+                isWhite(board[x + dx[i], y + dy[i]]) != thisWhite))
+            {
+                res.Add(new Move(dx[i], dy[i]));
+            }
         }
 
         return res;
