@@ -213,9 +213,9 @@ public class ManageBoard : MonoBehaviour
                 piece.canMove = false;
             }
         }
-        for (int i = 0; i < 7; i++) // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
+        for (int i = 0; i < 8; i++) // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
         {
-            for (int j = 0; j < 7; j++) {
+            for (int j = 0; j < 8; j++) {
                 if (isWhite(board[i, j]) == whiteTurn)
                 {
                     moves[i, j] = getMoves(i, j);
@@ -257,7 +257,7 @@ public class ManageBoard : MonoBehaviour
         if (dir == 4) return new Move(distance, distance);
         if (dir == 5) return new Move(distance, -distance);
         if (dir == 6) return new Move(-distance, -distance);
-        if (dir == 7) return new Move(distance, -distance);
+        if (dir == 7) return new Move(-distance, distance);
         else throw new Exception("directMove() wrong input dir");
     }
 
@@ -286,7 +286,7 @@ public class ManageBoard : MonoBehaviour
         {
             for (int i = 4; i < 8; i++)
             {
-                for (int j = 1; j < dirs[i]; j++)
+                for (int j = 1; j <= dirs[i]; j++)
                 {
                     Move tMove = directMove(j, i);
                     if (board[x + tMove.dx, y + tMove.dy] == "empty") res.Add(tMove);
@@ -303,7 +303,7 @@ public class ManageBoard : MonoBehaviour
         {
             for(int i = 0; i < 4; i++)
             {
-                for (int j = 1; j < dirs[i]; j++) {
+                for (int j = 1; j <= dirs[i]; j++) {
                     Move tMove = directMove(j, i);
                     if (board[x + tMove.dx, y + tMove.dy] == "empty") res.Add(tMove);
                     else if (isWhite(board[x + tMove.dx, y + tMove.dy]) == thisWhite) break;
@@ -327,9 +327,9 @@ public class ManageBoard : MonoBehaviour
         res[2] = y; // south
         res[3] = x; // west
         res[4] = 7 - (x > y ? x : y); // NE: 7 - max(x, y)
-        res[5] = (x > (7 - y) ? 7 - y : x); // SE: min(x, 7 - y) - if something is wrong, SE and NW might be swapped
+        res[5] = ((7 - x) > y ? y : 7 - x); // SE: min(x, 7 - y) - if something is wrong, SE and NW might be swapped
         res[6] = (x > y ? y : x); // SW - just minimum between x and y
-        res[7] = ((7 - x) > y ? y : 7 - x); // NW - min(7 - x, y)
+        res[7] = (x > (7 - y) ? 7 - y : x);  // NW - min(7 - x, y)
         return res;
     }
 }

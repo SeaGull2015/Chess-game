@@ -50,7 +50,7 @@ public class PieceBehaviour : MonoBehaviour
         {
             initPoint = transform.position;
             clickDragOffset = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            board.lightUpSquares(initPoint); // it is pretty illogical that pawn defines what colour the square should be, not the board manager, but I don't want to breed light up functions for different cases
+            board.lightUpSquares(initPoint);
         }
     }
 
@@ -63,6 +63,7 @@ public class PieceBehaviour : MonoBehaviour
     {
         if (canMove)
         {
+            board.lightDownSquares(initPoint);
             if (isCollided && (collisionPiece.transform.position - new Vector3(0, 0, 1) != initPoint))
             {
                 transform.position = collisionPiece.transform.position - new Vector3(0, 0, 1);
@@ -74,7 +75,6 @@ public class PieceBehaviour : MonoBehaviour
             {
                 transform.position = initPoint;
             }
-            board.lightDownSquares(initPoint);
         }
     }
 
