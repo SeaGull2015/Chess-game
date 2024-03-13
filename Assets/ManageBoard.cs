@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 
 public class ManageBoard : MonoBehaviour
 {
     struct Move
     {
+        public int startx;
+        public int starty;
         public int dx;
         public int dy;
-        public Move(int tdx, int tdy)
+        public Move(int tdx, int tdy, int sx, int sy)
         {
             dx = tdx;
             dy = tdy;
+            startx = sx;
+            starty = sy;
         }
     }
     // Start is called before the first frame update
@@ -26,7 +31,9 @@ public class ManageBoard : MonoBehaviour
     public Color lightSquareUpColorSelfy = new Color(20, 20, 20);
     public Color lightSquareUpColorEmpty = new Color(20, 20, 20);
     public Color lightSquareUpColorEnemy = new Color(20, 20, 20);
-    //public bool isPlayerWhite = true;
+    public bool isWhiteAI = true;
+    public bool isBlackAI = true;
+    public bool isPlayerWhite = true;
 
     private string[,] board = new string[8,8];
     private SquareBehaviour[,] squares = new SquareBehaviour[8,8];
@@ -38,6 +45,7 @@ public class ManageBoard : MonoBehaviour
     {
         false, false, false, false
     }; // left black, right black, left white, right white.
+    private System.Random rnd = new System.Random();
     void Start()
     {
         if (needBoard)
@@ -205,7 +213,7 @@ public class ManageBoard : MonoBehaviour
         foreach (var piece in pieces)
         {
             if (piece == null) continue;
-            if (piece.isWhite == whiteTurn /*&& piece.isWhite == isPlayerWhite*/) {
+            if (piece.isWhite == whiteTurn && !((whiteTurn && piece.isWhite && isWhiteAI) || (!whiteTurn && !piece.isWhite && isBlackAI))) { // if the piece colour matches the turn colour and this colour isn't AI controlled
                 piece.canMove = true;
             }
             else
@@ -214,7 +222,7 @@ public class ManageBoard : MonoBehaviour
             }
         }
         for (int i = 0; i < 8; i++) // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
-        {
+        { // actually no, the previous check controls player input, depending on whether it's ai turn or nay
             for (int j = 0; j < 8; j++) {
                 if (isWhite(board[i, j]) == whiteTurn)
                 {
@@ -225,6 +233,12 @@ public class ManageBoard : MonoBehaviour
                     moves[i, j] = new List<Move>();
                 }
             }
+        }
+
+        if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
+        {
+            Move epicMove = randomOpponent(whiteTurn, board, moves);
+            MakeMove(epicMove);
         }
 
         whiteTurn = !whiteTurn;
@@ -248,16 +262,16 @@ public class ManageBoard : MonoBehaviour
         nextMove();
     }
 
-    private Move directSlidingMove(int distance, int dir) // this kinda sucks
+    private Move directSlidingMove(int distance, int dir, int sx, int sy) // this kinda sucks
     {
-        if (dir == 0) return new Move(0, distance);
-        if (dir == 1) return new Move(distance, 0);
-        if (dir == 2) return new Move(0, -distance);
-        if (dir == 3) return new Move(-distance, 0);
-        if (dir == 4) return new Move(distance, distance);
-        if (dir == 5) return new Move(distance, -distance);
-        if (dir == 6) return new Move(-distance, -distance);
-        if (dir == 7) return new Move(-distance, distance);
+        if (dir == 0) return new Move(0, distance, sx, sy);
+        if (dir == 1) return new Move(distance, 0, sx, sy);
+        if (dir == 2) return new Move(0, -distance, sx, sy);
+        if (dir == 3) return new Move(-distance, 0, sx, sy);
+        if (dir == 4) return new Move(distance, distance, sx, sy);
+        if (dir == 5) return new Move(distance, -distance, sx, sy);
+        if (dir == 6) return new Move(-distance, -distance, sx, sy);
+        if (dir == 7) return new Move(-distance, distance, sx, sy);
         else throw new Exception("directMove() wrong input dir");
     }
 
@@ -288,12 +302,12 @@ public class ManageBoard : MonoBehaviour
             {
                 for (int j = 1; j <= dirs[i]; j++)
                 {
-                    Move tMove = directSlidingMove(j, i);
+                    Move tMove = directSlidingMove(j, i, x, y);
                     if (board[x + tMove.dx, y + tMove.dy] == "empty") res.Add(tMove);
                     else if (isWhite(board[x + tMove.dx, y + tMove.dy]) == thisWhite) break;
                     else if (isWhite(board[x + tMove.dx, y + tMove.dy]) != thisWhite)
                     {
-                        res.Add(directSlidingMove(j, i));
+                        res.Add(directSlidingMove(j, i, x, y));
                         break;
                     }
                 }
@@ -304,12 +318,12 @@ public class ManageBoard : MonoBehaviour
             for(int i = 0; i < 4; i++)
             {
                 for (int j = 1; j <= dirs[i]; j++) {
-                    Move tMove = directSlidingMove(j, i);
+                    Move tMove = directSlidingMove(j, i, x, y);
                     if (board[x + tMove.dx, y + tMove.dy] == "empty") res.Add(tMove);
                     else if (isWhite(board[x + tMove.dx, y + tMove.dy]) == thisWhite) break;
                     else if (isWhite(board[x + tMove.dx, y + tMove.dy]) != thisWhite)
                     {
-                        res.Add(directSlidingMove(j, i));
+                        res.Add(directSlidingMove(j, i, x, y));
                         break;
                     }
                 }
@@ -328,16 +342,16 @@ public class ManageBoard : MonoBehaviour
 
         if (y != yLim && board[x, y + dir] == "empty")
         {
-            res.Add(new Move(0, dir));
+            res.Add(new Move(0, dir, x, y));
         }
 
         if (y != yLim && x < 7 && board[x + 1, y + dir] != "empty" && thisWhite != isWhite(board[x + 1, y + dir])) // I would rather have y < 7 or y > 0, but it would be ugly, so y != yLim
         {
-            res.Add(new Move(1, dir));
+            res.Add(new Move(1, dir, x, y));
         }
         if (y != yLim && x > 0 && board[x - 1, y + dir] != "empty" && thisWhite != isWhite(board[x - 1, y + dir]))
         {
-            res.Add(new Move(-1, dir));
+            res.Add(new Move(-1, dir, x, y));
         }
 
         if (false) // TODO: insert en passant here
@@ -368,7 +382,7 @@ public class ManageBoard : MonoBehaviour
                 (board[x + dx[i], y + dy[i]] == "empty" ||
                 isWhite(board[x + dx[i], y + dy[i]]) != thisWhite))
             {
-                res.Add(new Move(dx[i], dy[i]));
+                res.Add(new Move(dx[i], dy[i], x, y));
             }
         }
 
@@ -390,7 +404,7 @@ public class ManageBoard : MonoBehaviour
                 (board[x + dx[i], y + dy[i]] == "empty" ||
                 isWhite(board[x + dx[i], y + dy[i]]) != thisWhite))
             {
-                res.Add(new Move(dx[i], dy[i]));
+                res.Add(new Move(dx[i], dy[i], x, y));
             }
         }
 
@@ -408,5 +422,62 @@ public class ManageBoard : MonoBehaviour
         res[6] = (x > y ? y : x); // SW - just minimum between x and y
         res[7] = (x > (7 - y) ? 7 - y : x);  // NW - min(7 - x, y)
         return res;
+    }
+
+    private void eatPiece(int x, int y)
+    {
+        board[x, y] = "empty";
+        Destroy(pieces[x, y].gameObject);
+    }
+
+    private void MakeMove(Move mv, List<Move> additionalTargets = null)
+    {
+        if (additionalTargets != null) // this should be a basis for en passant? idk
+        {
+            foreach (Move target in additionalTargets)
+            {
+                eatPiece(target.startx + target.dx, target.starty + target.dy);
+            }
+        }
+        // TODO: add logic for castling aka rokirovka (duh)
+        board[mv.startx + mv.dx, mv.starty + mv.dy] = board[mv.startx, mv.starty];
+        board[mv.startx, mv.starty] = "empty";
+        pieces[mv.startx + mv.dx, mv.starty + mv.dy] = pieces[mv.startx, mv.starty];
+        pieces[mv.startx, mv.starty] = null;
+
+        pieces[mv.startx + mv.dx, mv.starty + mv.dy].move(mv.dx, mv.dy);
+        nextMove();
+    }
+
+    private List<Move> tryRND(bool thisWhite, string[,] brd, List<Move>[,] mvs, int sidePieces) {
+        sidePieces = rnd.Next(sidePieces);
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (sidePieces == 0) return mvs[i, j];
+                if (thisWhite == isWhite(brd[i, j])) sidePieces--;
+            }
+        }
+        return new List<Move>();
+    }
+    private Move randomOpponent(bool thisWhite, string [,] brd, List<Move>[,] mvs)
+    {
+        int sidePieces = 0;
+        foreach (string pc in brd)
+        {
+            if (thisWhite == isWhite(pc)) sidePieces++;
+        }
+
+        for (int i = 0; i < 10; i++) // 10 tries to get a random move
+        {
+            List<Move> tmp = tryRND(thisWhite, brd, mvs, sidePieces);
+            if (tmp.Count > 0)
+            {
+                return tmp[rnd.Next(tmp.Count)];
+            }
+        }
+
+        return mvs[1, 1][1];
     }
 }

@@ -67,7 +67,7 @@ public class PieceBehaviour : MonoBehaviour
             if (isCollided && (collisionPiece.transform.position - new Vector3(0, 0, 1) != initPoint))
             {
                 transform.position = collisionPiece.transform.position - new Vector3(0, 0, 1);
-                move(initPoint, transform.position);
+                board.extractMove(initPoint, transform.position, this);
                 eat();
 
             }
@@ -93,10 +93,9 @@ public class PieceBehaviour : MonoBehaviour
         }
     }
 
-    private void move(Vector3 from, Vector3 to)
+    public void move(int dx, int dy)
     {
-        board.extractMove(from, to, this);
-        return;
+        transform.position = transform.position + new Vector3(dx, dy, 0);
     }
 
     private void eat(GameObject Piece)
