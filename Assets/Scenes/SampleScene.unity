@@ -264,9 +264,57 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: isBlackAI
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: isWhiteAI
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
       propertyPath: boardPiece
       value: 
       objectReference: {fileID: 3682134663511102704, guid: b4de1e79934d4a54398f8b6217111add, type: 3}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: isPlayerWhite
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorEmpty.b
+      value: 0.062428895
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorEmpty.g
+      value: 0.5169811
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorEmpty.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorEnemy.b
+      value: 0.023169866
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorEnemy.g
+      value: 0.3433962
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorEnemy.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorSelfy.b
+      value: 0.11485986
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorSelfy.g
+      value: 0.6754716
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: lightSquareUpColorSelfy.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5579632821471749428, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
       propertyPath: m_Name
       value: BoardManager
