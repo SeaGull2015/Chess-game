@@ -40,7 +40,6 @@ public partial class ManageBoard
                 return tmp[rnd.Next(tmp.Count)];
             }
         }
-
-        return mvs[1, 1][1];
+        throw new Exception("failed to make a random move");
     }
 }

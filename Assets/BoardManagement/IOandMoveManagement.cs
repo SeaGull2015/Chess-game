@@ -9,36 +9,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public partial class ManageBoard
 {
-    public void lightUpSquares(Vector3 where)
-    {
-        int x = Convert.ToInt32(where.x - startpositionX);
-        int y = Convert.ToInt32(where.y - startpositionY);
-        squares[x, y].lightUp(lightSquareUpColorSelfy);
-        foreach (var move in moves[x, y])
-        {
-            if (board[x + move.dx, y + move.dy] == "empty") squares[x + move.dx, y + move.dy].lightUp(lightSquareUpColorEmpty);
-            else squares[x + move.dx, y + move.dy].lightUp(lightSquareUpColorEnemy);
-        }
-    }
-
-    public void lightDownSquares(Vector3 where)
-    {
-        int x = Convert.ToInt32(where.x - startpositionX);
-        int y = Convert.ToInt32(where.y - startpositionY);
-        squares[x, y].updateColor();
-        foreach (var move in moves[x, y])
-        {
-            squares[x + move.dx, y + move.dy].updateColor();
-        }
-    }
-
-    bool isWhite(string s)
-    {
-        return char.IsLower(s[0]);
-    }
-
-
-    void nextMove()
+    private void nextMove()
     {
         foreach (var piece in pieces)
         {
@@ -75,6 +46,33 @@ public partial class ManageBoard
         }
 
         whiteTurn = !whiteTurn;
+    }
+    public void lightUpSquares(Vector3 where)
+    {
+        int x = Convert.ToInt32(where.x - startpositionX);
+        int y = Convert.ToInt32(where.y - startpositionY);
+        squares[x, y].lightUp(lightSquareUpColorSelfy);
+        foreach (var move in moves[x, y])
+        {
+            if (board[x + move.dx, y + move.dy] == "empty") squares[x + move.dx, y + move.dy].lightUp(lightSquareUpColorEmpty);
+            else squares[x + move.dx, y + move.dy].lightUp(lightSquareUpColorEnemy);
+        }
+    }
+
+    public void lightDownSquares(Vector3 where)
+    {
+        int x = Convert.ToInt32(where.x - startpositionX);
+        int y = Convert.ToInt32(where.y - startpositionY);
+        squares[x, y].updateColor();
+        foreach (var move in moves[x, y])
+        {
+            squares[x + move.dx, y + move.dy].updateColor();
+        }
+    }
+
+    private bool isWhite(string s)
+    {
+        return char.IsLower(s[0]);
     }
 
     public void extractMove(Vector3 from, Vector3 to, PieceBehaviour who)
@@ -121,5 +119,29 @@ public partial class ManageBoard
 
         pieces[targX, targY].move(mv.dx, mv.dy);
         //nextMove();
+    }
+    
+    public void removePieceFromLists(PieceBehaviour pc)
+    {
+        if (pc.isWhite)
+        {
+            whitePieces.Remove(pc);
+        }
+        else
+        {
+            blackPieces.Remove(pc);
+        }
+    }
+
+    public void addPieceToLists(PieceBehaviour pc)
+    {
+        if (pc.isWhite)
+        {
+            whitePieces.Add(pc);
+        }
+        else
+        {
+            blackPieces.Add(pc);
+        }
     }
 }

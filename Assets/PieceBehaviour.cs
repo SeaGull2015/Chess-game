@@ -27,6 +27,11 @@ public class PieceBehaviour : MonoBehaviour
         boardManager = GameObject.FindWithTag("boardManager"); ;
         board = boardManager.GetComponent<ManageBoard>();
         name = isWhite ? figureType : figureType.ToUpper();
+        board.addPieceToLists(this);
+    }
+    private void OnDestroy()
+    {
+        board.removePieceFromLists(this);
     }
 
     // Update is called once per frame
@@ -127,4 +132,6 @@ public class PieceBehaviour : MonoBehaviour
         }
         else thisSpriteRenderer.color = Color.grey;   
     }
+
+
 }

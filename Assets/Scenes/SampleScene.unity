@@ -280,6 +280,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: timeBetweenAIMoves
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
       propertyPath: lightSquareUpColorEmpty.b
       value: 0.062428895
       objectReference: {fileID: 0}

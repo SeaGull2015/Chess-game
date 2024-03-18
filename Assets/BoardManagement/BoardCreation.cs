@@ -125,18 +125,18 @@ public partial class ManageBoard
                 if (isWhite(tboard[tX, tY]))
                 {
                     pcBehaviour.isWhite = true;
-                    whitePieces.Add(pcBehaviour);
+                    //whitePieces.Add(pcBehaviour);
                 }
-                else
-                {
-                    blackPieces.Add(pcBehaviour);
-                }
+                //else
+                //{
+                //    blackPieces.Add(pcBehaviour);
+                //}
                 if (!pcBehaviour.setType(tboard[tX, tY].ToLower()))
                 {
                     throw new Exception("bad type when putting down pieces");
                 }
             }
         }
-        nextMove();
+        //nextMove();
     }
 }
