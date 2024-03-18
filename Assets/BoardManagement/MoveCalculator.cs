@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 static class MoveCalculator
@@ -24,6 +25,24 @@ static class MoveCalculator
                 else
                 {
                     moves[i, j] = new List<Move>();
+                }
+            }
+        }
+        return moves;
+    }
+
+    static public List<Move> generateAllMovesList(string[,] brd, bool whiteTurn)
+    {
+        List<Move> moves = new List<Move>();
+        board = brd;
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (board[i, j] == "empty") continue;
+                else if (ManageBoard.isWhite(board[i, j]) == whiteTurn)
+                {
+                    moves.AddRange(getMoves(i, j));
                 }
             }
         }
@@ -56,14 +75,14 @@ static class MoveCalculator
     }
     static private Move directSlidingMove(int distance, int dir, int sx, int sy) // this kinda sucks
     {
-        if (dir == 0) return new Move(0, distance, sx, sy);
-        if (dir == 1) return new Move(distance, 0, sx, sy);
-        if (dir == 2) return new Move(0, -distance, sx, sy);
-        if (dir == 3) return new Move(-distance, 0, sx, sy);
-        if (dir == 4) return new Move(distance, distance, sx, sy);
-        if (dir == 5) return new Move(distance, -distance, sx, sy);
-        if (dir == 6) return new Move(-distance, -distance, sx, sy);
-        if (dir == 7) return new Move(-distance, distance, sx, sy);
+        if (dir == 0) return new Move(0, distance, sx, sy, board[sx, sy], board[sx, sy + distance]);
+        if (dir == 1) return new Move(distance, 0, sx, sy, board[sx, sy], board[sx + distance, sy]);
+        if (dir == 2) return new Move(0, -distance, sx, sy, board[sx, sy], board[sx, sy - distance]);
+        if (dir == 3) return new Move(-distance, 0, sx, sy, board[sx, sy], board[sx - distance, sy]);
+        if (dir == 4) return new Move(distance, distance, sx, sy, board[sx, sy], board[sx + distance, sy + distance]);
+        if (dir == 5) return new Move(distance, -distance, sx, sy, board[sx, sy], board[sx + distance, sy - distance]);
+        if (dir == 6) return new Move(-distance, -distance, sx, sy, board[sx, sy], board[sx - distance, sy - distance]);
+        if (dir == 7) return new Move(-distance, distance, sx, sy, board[sx, sy], board[sx - distance, sy + distance]);
         else throw new Exception("directMove() wrong input dir");
     }
 
@@ -123,16 +142,16 @@ static class MoveCalculator
 
         if (y != yLim && board[x, y + dir] == "empty")
         {
-            res.Add(new Move(0, dir, x, y));
+            res.Add(new Move(0, dir, x, y, board[x, y], board[x, y + dir]));
         }
 
         if (y != yLim && x < 7 && board[x + 1, y + dir] != "empty" && thisWhite != ManageBoard.isWhite(board[x + 1, y + dir])) // I would rather have y < 7 or y > 0, but it would be ugly, so y != yLim
         {
-            res.Add(new Move(1, dir, x, y));
+            res.Add(new Move(1, dir, x, y, board[x, y], board[x + 1, y + dir]));
         }
         if (y != yLim && x > 0 && board[x - 1, y + dir] != "empty" && thisWhite != ManageBoard.isWhite(board[x - 1, y + dir]))
         {
-            res.Add(new Move(-1, dir, x, y));
+            res.Add(new Move(-1, dir, x, y, board[x, y], board[x - 1, y + dir]));
         }
 
         if (false) // TODO: insert en passant here
@@ -163,7 +182,7 @@ static class MoveCalculator
                 (board[x + dx[i], y + dy[i]] == "empty" ||
                 ManageBoard.isWhite(board[x + dx[i], y + dy[i]]) != thisWhite))
             {
-                res.Add(new Move(dx[i], dy[i], x, y));
+                res.Add(new Move(dx[i], dy[i], x, y, board[x, y], board[x + dx[i], y + dy[i]]));
             }
         }
 
@@ -185,7 +204,7 @@ static class MoveCalculator
                 (board[x + dx[i], y + dy[i]] == "empty" ||
                 ManageBoard.isWhite(board[x + dx[i], y + dy[i]]) != thisWhite))
             {
-                res.Add(new Move(dx[i], dy[i], x, y));
+                res.Add(new Move(dx[i], dy[i], x, y, board[x, y], board[x + dx[i], y + dy[i]]));
             }
         }
 
