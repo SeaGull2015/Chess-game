@@ -23,21 +23,9 @@ public partial class ManageBoard
                 piece.canMove = false;
             }
         }
-        for (int i = 0; i < 8; i++) // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
-        { // actually no, the previous check controls player input, depending on whether it's ai turn or nay
-            for (int j = 0; j < 8; j++)
-            {
-                if (board[i, j] == "empty") continue;
-                else if (isWhite(board[i, j]) == whiteTurn)
-                {
-                    moves[i, j] = getMoves(i, j);
-                }
-                else
-                {
-                    moves[i, j] = new List<Move>();
-                }
-            }
-        }
+
+        moves = MoveCalculator.generateAllMoves(board, whiteTurn); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
+        // actually no, the previous check controls player input, depending on whether it's ai turn or nay
 
         if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
         {
@@ -70,7 +58,7 @@ public partial class ManageBoard
         }
     }
 
-    private bool isWhite(string s)
+    public static bool isWhite(string s)
     {
         return char.IsLower(s[0]);
     }
