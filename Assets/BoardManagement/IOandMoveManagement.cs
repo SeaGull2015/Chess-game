@@ -29,7 +29,15 @@ public partial class ManageBoard
 
         if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
         {
-            Move epicMove = randomOpponent(whiteTurn, board, moves);
+            Move epicMove;
+            if (whiteTurn)
+            {
+                epicMove = whiteAI.getMove(true, board, MoveCalculator.generateAllMovesList(board, true));
+            }
+            else
+            {
+                epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesList(board, false));
+            }
             MakeMove(epicMove);
         }
 

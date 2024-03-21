@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-struct Move
+public struct Move
 {
     public int startx;
     public int starty;
