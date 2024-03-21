@@ -118,6 +118,7 @@ public class EvalOpponent
     private virtualBoard vboard = new virtualBoard();
     int searchDepth = 2;
     bool amWhite = true;
+    int aggresionMod = 2;
     private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>()
     {
         {"pawn", 10},
@@ -132,7 +133,14 @@ public class EvalOpponent
     
     private int evaluate()
     {
-        return countPieces(vboard.whiteIndex) - countPieces(vboard.blackIndex);
+        if (amWhite)
+        {
+            return countPieces(vboard.whiteIndex) - countPieces(vboard.blackIndex)*aggresionMod;
+        }
+        else
+        {
+            return countPieces(vboard.whiteIndex)*aggresionMod - countPieces(vboard.blackIndex);
+        }
     }
 
     private int countPieces(int colourIndex)
