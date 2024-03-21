@@ -139,10 +139,15 @@ static class MoveCalculator
         bool thisWhite = ManageBoard.isWhite(board[x, y]);
         int dir = thisWhite ? 1 : -1;
         int yLim = thisWhite ? 7 : 0;
+        int startYlvl = thisWhite ? 1 : 6;
 
         if (y != yLim && board[x, y + dir] == "empty")
         {
             res.Add(new Move(0, dir, x, y, board[x, y], board[x, y + dir]));
+            if (y == startYlvl && board[x, y + dir * 2] == "empty")
+            {
+                res.Add(new Move(0, dir * 2, x, y, board[x, y], board[x, y + dir * 2]));
+            }
         }
 
         if (y != yLim && x < 7 && board[x + 1, y + dir] != "empty" && thisWhite != ManageBoard.isWhite(board[x + 1, y + dir])) // I would rather have y < 7 or y > 0, but it would be ugly, so y != yLim
