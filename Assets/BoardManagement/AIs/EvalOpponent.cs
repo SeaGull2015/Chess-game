@@ -118,7 +118,7 @@ public class EvalOpponent
     private virtualBoard vboard = new virtualBoard();
     int searchDepth = 2;
     bool amWhite = true;
-    int aggresionMod = 2;
+    int aggresionMod = 1;
     private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>()
     {
         {"pawn", 10},
