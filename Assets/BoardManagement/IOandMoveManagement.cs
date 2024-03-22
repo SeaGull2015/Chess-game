@@ -24,9 +24,7 @@ public partial class ManageBoard
             }
         }
 
-        moves = MoveCalculator.generateAllMoves(board, whiteTurn); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
-        // actually no, the previous check controls player input, depending on whether it's ai turn or nay
-        // gotta also make a lister out of it instead of running it twice for ai
+        
         if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
         {
             Move epicMove;
@@ -39,6 +37,12 @@ public partial class ManageBoard
                 epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
             }
             MakeMove(epicMove);
+        }
+        else
+        {
+            moves = MoveCalculator.generateAllMoves(board, whiteTurn); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
+                // actually no, the previous check controls player input, depending on whether it's ai turn or nay
+                // gotta also make a lister out of it instead of running it twice for ai
         }
 
         whiteTurn = !whiteTurn;
