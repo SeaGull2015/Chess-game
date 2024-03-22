@@ -138,5 +138,7 @@ public partial class ManageBoard
             }
         }
         //nextMove();
+        whiteAI = new EvalOpponent(board);
+        blackAI = new EvalOpponent(board); 
     }
 }

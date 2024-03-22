@@ -24,19 +24,19 @@ public partial class ManageBoard
             }
         }
 
-        
         if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
         {
             Move epicMove;
             if (whiteTurn)
             {
-                epicMove = whiteAI.getMove(true, board, MoveCalculator.generateAllMovesListInterestingFirst(board, true));
+                epicMove = whiteAI.getMove(true, lastMove, MoveCalculator.generateAllMovesListInterestingFirst(board, true));
             }
             else
             {
-                epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
+                epicMove = blackAI.getMove(false, lastMove, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
             }
             MakeMove(epicMove);
+            lastMove = epicMove;
         }
         else
         {
@@ -81,7 +81,7 @@ public partial class ManageBoard
         int posyFrom = Convert.ToInt32(from.y - startpositionY);
         int posxTo = Convert.ToInt32(to.x - startpositionX);
         int posyTo = Convert.ToInt32(to.y - startpositionY);
-
+        lastMove = new Move(posxTo - posxFrom, posyTo - posyFrom, posxFrom, posyFrom, who.name, board[posxTo, posyTo]);
         pieces[posxFrom, posyFrom] = null;
         pieces[posxTo, posyTo] = who;
 
