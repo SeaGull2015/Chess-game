@@ -184,10 +184,11 @@ public class EvalOpponent
 
         return alpha;
     }
-    public Move getMove(bool thisWhite, Move lastMove, List<Move> mvs/*, List<PieceBehaviour> wPieces, List<PieceBehaviour> bPieces, PieceBehaviour[,] pieces*/)
+
+    public Move getMove(bool thisWhite, string[,] brd, List<Move> mvs/*, List<PieceBehaviour> wPieces, List<PieceBehaviour> bPieces, PieceBehaviour[,] pieces*/)
     {
         var st = Time.realtimeSinceStartup;
-        if (!lastMove.nullMove) vboard.virtualMove(lastMove);
+        vboard.setState(brd);
         amWhite = thisWhite;
 
         int res = -100000;
@@ -217,46 +218,12 @@ public class EvalOpponent
         return mvs[index];
     }
 
-    public EvalOpponent(string[,] brd)
+    public EvalOpponent()
     {
-        vboard.setState(brd);
+
     }
     ~EvalOpponent()
     {
 
-    }
-
-    // better check if that works lol
-    public Move getMove(bool thisWhite, string[,] brd, List<Move> mvs/*, List<PieceBehaviour> wPieces, List<PieceBehaviour> bPieces, PieceBehaviour[,] pieces*/)
-    {
-        var st = Time.realtimeSinceStartup;
-        vboard.setState(brd);
-        amWhite = thisWhite;
-
-        int res = -100000;
-        int tres = -100000;
-        int index = 0;
-        int n = 0;
-        int beth = -res;
-
-        foreach (Move mv in mvs)
-        {
-            vboard.virtualMove(mv);
-
-            tres = -search(searchDepth, -beth, evaluate(), !thisWhite);
-            if (tres > res)
-            {
-                beth = res;
-                res = tres;
-                index = n;
-            }
-
-            vboard.virtualUnMove(mv);
-            n++;
-        }
-        Debug.Log(iterCounter);
-        iterCounter = 0;
-        Debug.Log(Time.realtimeSinceStartup - st);
-        return mvs[index];
     }
 }

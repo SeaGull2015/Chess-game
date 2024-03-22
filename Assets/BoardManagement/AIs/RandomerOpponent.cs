@@ -10,10 +10,5 @@ public class RandomerOpponent : AItemplate
         int r = rnd.Next(mvs.Count);
         return mvs[r];
     }
-    public override Move getMove(bool thisWhite, Move lastMove, List<Move> mvs)
-    {
-        int r = rnd.Next(mvs.Count);
-        return mvs[r];
-    }
 }
 
