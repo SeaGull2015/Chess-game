@@ -25,7 +25,7 @@ public partial class ManageBoard : MonoBehaviour
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
     public EvalOpponent blackAI = new EvalOpponent();
-    public RandomerOpponent whiteAI = new RandomerOpponent();
+    public EvalOpponent whiteAI = new EvalOpponent();
 
     private string[,] board = new string[8,8];
     private SquareBehaviour[,] squares = new SquareBehaviour[8,8];

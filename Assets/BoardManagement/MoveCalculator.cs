@@ -9,6 +9,17 @@ static class MoveCalculator
 {
     static string[,] board = new string[8, 8];
 
+    static private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>() // too bad the only way to make a const dictionary is using a switch case, huh?
+    {
+        {"pawn", 10},
+        {"knight", 25},
+        {"bishop", 25},
+        {"rook", 40},
+        {"queen", 100},
+        {"king", 200},
+        {"empty", 0} // don't care
+    };
+
     static public List<Move>[,] generateAllMoves(string[,] brd, bool whiteTurn)
     {
         List<Move>[,] moves = new List<Move>[8,8];
@@ -48,6 +59,33 @@ static class MoveCalculator
         }
         return moves;
     }
+
+    static public List<Move> generateAllMovesListInterestingFirst(string[,] brd, bool whiteTurn)
+    {
+        List<Move> moves = new List<Move>();
+        board = brd;
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (board[i, j] == "empty") continue;
+                else if (ManageBoard.isWhite(board[i, j]) == whiteTurn)
+                {
+                    List<Move> tlist = getMoves(i, j);
+                    foreach (Move mv in tlist)
+                    {
+                        if (mv.target != "empty") moves.Insert(0, mv);
+                        else moves.Add(mv);
+                    }
+                }
+            }
+        }
+        //moves.Sort((x,y)=> -pieceValuePairs[x.target.ToLower()].CompareTo(pieceValuePairs[y.target.ToLower()])); // basicly I want moves with higher price targets first to improve alpha-beta pruning performance
+        // note though that this doesn't work for en passants, cause bad code
+        // consider also instead of sorting just checking if it has a target, then moving it to top
+        return moves;
+    }
+
 
     static public List<Move> getMoves(int x, int y, string[,] brd)
     {

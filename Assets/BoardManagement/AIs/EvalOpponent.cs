@@ -25,7 +25,7 @@ public class Pair<T1, T2>
 class virtualBoard
 {
     bool whiteTurn = true;
-    public string[,] board = new string[8,8]; // "pawn", "knight", "bishop", "rook", "queen", "king"
+    public string[,] board = new string[8, 8]; // "pawn", "knight", "bishop", "rook", "queen", "king"
     public Dictionary<string, int[]> pieceCountDict = new Dictionary<string, int[]>()
     {
         {"pawn", new int[2]},
@@ -81,7 +81,7 @@ class virtualBoard
 
     public void setState(string[,] brd)
     {
-        board = brd;
+        board = (string[,])brd.Clone();
         recount();
     }
 
@@ -105,7 +105,7 @@ class virtualBoard
 
     public virtualBoard(string[,] brd)
     {
-        board = brd;
+        board = (string[,])brd.Clone();
         recount();
     }
     public virtualBoard()
@@ -116,10 +116,11 @@ class virtualBoard
 public class EvalOpponent
 {
     private virtualBoard vboard = new virtualBoard();
-    int searchDepth = 2;
+    int iterCounter = 0;
+    int searchDepth = 4;
     bool amWhite = true;
     int aggresionMod = 1;
-    private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>()
+    private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>() // too bad the only way to make a const dictionary is using a switch case, huh?
     {
         {"pawn", 10},
         {"knight", 25},
@@ -130,16 +131,16 @@ public class EvalOpponent
         {"empty", 0} // don't care
     };
 
-    
+
     private int evaluate()
     {
         if (amWhite)
         {
-            return countPieces(vboard.whiteIndex) - countPieces(vboard.blackIndex)*aggresionMod;
+            return countPieces(vboard.whiteIndex) - countPieces(vboard.blackIndex) * aggresionMod;
         }
         else
         {
-            return countPieces(vboard.whiteIndex)*aggresionMod - countPieces(vboard.blackIndex);
+            return countPieces(vboard.whiteIndex) * aggresionMod - countPieces(vboard.blackIndex);
         }
     }
 
@@ -160,29 +161,33 @@ public class EvalOpponent
         return rs;
     }
 
-    int search(int depth, bool whiteTurn, List<Move> possibleMoves = null)
+    int search(int depth, int beta, int alpha, bool whiteTurn, List<Move> possibleMoves = null)
     {
+        iterCounter++;
         if (depth == 0) return evaluate();
 
-        
-        if (possibleMoves == null) possibleMoves = MoveCalculator.generateAllMovesList(vboard.board, whiteTurn);
+
+        if (possibleMoves == null) possibleMoves = MoveCalculator.generateAllMovesListInterestingFirst(vboard.board, whiteTurn);
         if (possibleMoves.Count == 0) return 0;
 
-        int res = -100000;
 
         foreach (Move mv in possibleMoves)
         {
             vboard.virtualMove(mv);
 
-            res = math.max(res, -search(depth - 1, !whiteTurn));
+            int eval = -search(depth - 1, -alpha, -beta, !whiteTurn);
 
             vboard.virtualUnMove(mv);
+            if (alpha > beta) return alpha;
+            alpha = math.max(eval, alpha);
         }
 
-        return res;
+        return alpha;
     }
-    
-    public Move getMove(bool thisWhite, string[,] brd, List<Move> mvs/*, List<PieceBehaviour> wPieces, List<PieceBehaviour> bPieces, PieceBehaviour[,] pieces*/) { 
+
+    public Move getMove(bool thisWhite, string[,] brd, List<Move> mvs/*, List<PieceBehaviour> wPieces, List<PieceBehaviour> bPieces, PieceBehaviour[,] pieces*/)
+    {
+        var st = Time.realtimeSinceStartup;
         vboard.setState(brd);
         amWhite = thisWhite;
 
@@ -190,14 +195,16 @@ public class EvalOpponent
         int tres = -100000;
         int index = 0;
         int n = 0;
+        int beth = -res;
 
         foreach (Move mv in mvs)
         {
             vboard.virtualMove(mv);
 
-            tres = -search(searchDepth, !thisWhite);
+            tres = -search(searchDepth, -res, evaluate(), !thisWhite);
             if (tres > res)
             {
+                beth = res;
                 res = tres;
                 index = n;
             }
@@ -205,7 +212,9 @@ public class EvalOpponent
             vboard.virtualUnMove(mv);
             n++;
         }
-
+        Debug.Log(iterCounter);
+        iterCounter = 0;
+        Debug.Log(Time.realtimeSinceStartup - st);
         return mvs[index];
     }
 
