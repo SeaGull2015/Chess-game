@@ -113,14 +113,13 @@ class virtualBoard
     }
 
 }
-public class EvalOpponent
+public class EvalOpponent : AItemplate
 {
     private virtualBoard vboard = new virtualBoard();
-    int iterCounter = 0;
-    int searchDepth = 4;
+    int searchDepth = 3;
     bool amWhite = true;
     int aggresionMod = 1;
-    private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>() // too bad the only way to make a const dictionary is using a switch case, huh?
+    private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>()
     {
         {"pawn", 10},
         {"knight", 25},
@@ -161,33 +160,30 @@ public class EvalOpponent
         return rs;
     }
 
-    int search(int depth, int beta, int alpha, bool whiteTurn, List<Move> possibleMoves = null)
+    int search(int depth, bool whiteTurn, List<Move> possibleMoves = null)
     {
-        iterCounter++;
         if (depth == 0) return evaluate();
 
 
-        if (possibleMoves == null) possibleMoves = MoveCalculator.generateAllMovesListInterestingFirst(vboard.board, whiteTurn);
+        if (possibleMoves == null) possibleMoves = MoveCalculator.generateAllMovesList(vboard.board, whiteTurn);
         if (possibleMoves.Count == 0) return 0;
 
+        int res = -100000;
 
         foreach (Move mv in possibleMoves)
         {
             vboard.virtualMove(mv);
 
-            int eval = -search(depth - 1, -alpha, -beta, !whiteTurn);
+            res = math.max(res, -search(depth - 1, !whiteTurn));
 
             vboard.virtualUnMove(mv);
-            if (alpha > beta) return alpha;
-            alpha = math.max(eval, alpha);
         }
 
-        return alpha;
+        return res;
     }
 
-    public Move getMove(bool thisWhite, string[,] brd, List<Move> mvs/*, List<PieceBehaviour> wPieces, List<PieceBehaviour> bPieces, PieceBehaviour[,] pieces*/)
+    public override Move getMove(bool thisWhite, string[,] brd, List<Move> mvs/*, List<PieceBehaviour> wPieces, List<PieceBehaviour> bPieces, PieceBehaviour[,] pieces*/)
     {
-        var st = Time.realtimeSinceStartup;
         vboard.setState(brd);
         amWhite = thisWhite;
 
@@ -195,16 +191,14 @@ public class EvalOpponent
         int tres = -100000;
         int index = 0;
         int n = 0;
-        int beth = -res;
 
         foreach (Move mv in mvs)
         {
             vboard.virtualMove(mv);
 
-            tres = -search(searchDepth, -res, evaluate(), !thisWhite);
+            tres = -search(searchDepth, !thisWhite);
             if (tres > res)
             {
-                beth = res;
                 res = tres;
                 index = n;
             }
@@ -212,9 +206,7 @@ public class EvalOpponent
             vboard.virtualUnMove(mv);
             n++;
         }
-        Debug.Log(iterCounter);
-        iterCounter = 0;
-        Debug.Log(Time.realtimeSinceStartup - st);
+
         return mvs[index];
     }
 
