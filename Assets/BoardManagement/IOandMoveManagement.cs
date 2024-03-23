@@ -37,6 +37,16 @@ public partial class ManageBoard
             else
             {
                 epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
+                if (Debug.isDebugBuild)
+                {
+                    var t = new EvalOpponent(2).getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
+                    if (epicMove.dx != t.dx || epicMove.dy != t.dy)
+                    {
+                        Debug.Log("Detected discrepency between Alpha beta and Eval oppon");
+                        string str = "start x " + t.startx + ", " + t.starty + " tdx" + t.dx + " " + t.dy;
+                        Debug.Log(str);
+                    }
+                }
             }
             MakeMove(epicMove);
         }

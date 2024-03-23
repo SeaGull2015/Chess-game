@@ -82,8 +82,8 @@ public class AlphaBetaOpponent : AItemplate
         vboard.setState(brd);
         amWhite = thisWhite;
 
-        int res = -100000;
-        int tres = -100000;
+        int res = -1000000;
+        int tres = -1000000;
         int index = 0;
         int n = 0;
         int beth = -res;
@@ -92,7 +92,7 @@ public class AlphaBetaOpponent : AItemplate
         {
             vboard.virtualMove(mv);
 
-            tres = -search(searchDepth, -res, 0, !thisWhite);
+            tres = -search(searchDepth, 1000000, -1000000, !thisWhite);
             if (tres > res)
             {
                 beth = res;
@@ -109,9 +109,9 @@ public class AlphaBetaOpponent : AItemplate
         return mvs[index];
     }
 
-    public AlphaBetaOpponent()
+    public AlphaBetaOpponent(int depth)
     {
-
+        searchDepth = depth;
     }
     ~AlphaBetaOpponent()
     {

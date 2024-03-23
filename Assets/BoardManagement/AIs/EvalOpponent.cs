@@ -210,9 +210,9 @@ public class EvalOpponent : AItemplate
         return mvs[index];
     }
 
-    public EvalOpponent()
+    public EvalOpponent(int depth)
     {
-
+        searchDepth = depth;
     }
     ~EvalOpponent()
     {
