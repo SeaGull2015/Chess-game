@@ -79,6 +79,7 @@ public class AlphaBetaOpponent : AItemplate
 
             int eval = -search(depth - 1, -alpha, -beta, !whiteTurn);
             eval += piecePositionPairs[mv.piece.ToLower()][mv.starty + mv.dy, mv.startx + mv.dx];
+#warning piecePositionPairs eat a lot of performance, please find another way to work with this
 
             vboard.virtualUnMove(mv);
             if (eval >= beta) return beta;
