@@ -115,9 +115,8 @@ class virtualBoard
 public class EvalOpponent : AItemplate
 {
     private virtualBoard vboard = new virtualBoard();
-    private int searchDepth = 3;
-    private bool amWhite = true;
-    private int aggresionMod = 1;
+    int searchDepth = 2;
+    bool amWhite = true;
     private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>()
     {
         {"pawn", 10},
@@ -132,14 +131,7 @@ public class EvalOpponent : AItemplate
 
     private int evaluate()
     {
-        if (amWhite)
-        {
-            return countPieces(vboard.whiteIndex) - countPieces(vboard.blackIndex) * aggresionMod;
-        }
-        else
-        {
-            return countPieces(vboard.whiteIndex) * aggresionMod - countPieces(vboard.blackIndex);
-        }
+        return countPieces(vboard.whiteIndex) - countPieces(vboard.blackIndex);
     }
 
     private int countPieces(int colourIndex)
@@ -183,6 +175,7 @@ public class EvalOpponent : AItemplate
 
     public override Move getMove(bool thisWhite, string[,] brd, List<Move> mvs/*, List<PieceBehaviour> wPieces, List<PieceBehaviour> bPieces, PieceBehaviour[,] pieces*/)
     {
+
         vboard.setState(brd);
         amWhite = thisWhite;
 
@@ -209,9 +202,12 @@ public class EvalOpponent : AItemplate
         return mvs[index];
     }
 
-    public EvalOpponent(int depth)
+    public EvalOpponent(int depth, bool isWhite)
     {
         searchDepth = depth;
+        amWhite = isWhite;
+        if (amWhite && searchDepth % 2 == 0) searchDepth--;
+        if (!amWhite && searchDepth % 2 != 0) searchDepth--;
     }
     ~EvalOpponent()
     {

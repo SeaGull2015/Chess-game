@@ -17,6 +17,7 @@ public partial class ManageBoard
             board = FEN(defStart);
             putPieces(board);
         }
+        if (isWhiteAI) nextMove();
     }
     void createBoard()
     {

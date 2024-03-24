@@ -78,6 +78,7 @@ public class AlphaBetaOpponent : AItemplate
             vboard.virtualMove(mv);
 
             int eval = -search(depth - 1, -alpha, -beta, !whiteTurn);
+            eval += piecePositionPairs[mv.piece.ToLower()][mv.starty + mv.dy, mv.startx + mv.dx];
 
             vboard.virtualUnMove(mv);
             if (eval >= beta) return beta;
@@ -104,6 +105,7 @@ public class AlphaBetaOpponent : AItemplate
             vboard.virtualMove(mv);
 
             tres = -search(searchDepth, 1000000, -1000000, !thisWhite);
+            tres += piecePositionPairs[mv.piece.ToLower()][mv.starty + mv.dy, mv.startx + mv.dx];
             if (tres > res)
             {
                 beth = res;
@@ -125,7 +127,11 @@ public class AlphaBetaOpponent : AItemplate
         searchDepth = depth;
         amWhite = isWhite;
 
+        if (amWhite && searchDepth % 2 == 0) searchDepth--; // very ugly crutch, but I'm not sure why black only works if searchdepth is % 2 == 0
+        if (!amWhite && searchDepth % 2 != 0) searchDepth--; // and white too
+
         setPiecePositionPairs();
+
 
         if (!amWhite)
         {

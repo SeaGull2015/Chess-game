@@ -24,8 +24,8 @@ public partial class ManageBoard : MonoBehaviour
     public bool isPlayerWhite = true;
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
-    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(5, false);
-    public EvalOpponent whiteAI = new EvalOpponent(2);
+    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(2, false);
+    public EvalOpponent whiteAI = new EvalOpponent(2, true);
 
     private string[,] board = new string[8,8];
     private SquareBehaviour[,] squares = new SquareBehaviour[8,8];
@@ -33,6 +33,7 @@ public partial class ManageBoard : MonoBehaviour
     private List<PieceBehaviour> whitePieces = new List<PieceBehaviour>();
     private List<PieceBehaviour> blackPieces = new List<PieceBehaviour>();
     private List<Move>[,] moves = new List<Move>[8,8];
+    private int moveCounter;
     private string defStart = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     private bool[] castles = new bool[4]
     {
