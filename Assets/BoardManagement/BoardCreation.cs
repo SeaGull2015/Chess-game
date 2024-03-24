@@ -28,7 +28,7 @@ public partial class ManageBoard
                 GameObject sq = Instantiate(square, transform.position + new Vector3(tX + startpositionX, tY + startpositionY, +1), transform.rotation);
                 sq.name = "square " + (tY * 8 + tX).ToString();
                 SquareBehaviour sqBehav = sq.GetComponent<SquareBehaviour>();
-                sqBehav.isLight = (tY + tX) % 2 == 0;
+                sqBehav.isLight = (tY + tX) % 2 != 0;
                 sqBehav.updateColor();
 
                 squares[tX, tY] = sqBehav;
