@@ -269,7 +269,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
       propertyPath: isWhiteAI
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
       propertyPath: boardPiece

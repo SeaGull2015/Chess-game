@@ -24,7 +24,6 @@ public class Pair<T1, T2>
 }
 class virtualBoard
 {
-    bool whiteTurn = true;
     public string[,] board = new string[8, 8]; // "pawn", "knight", "bishop", "rook", "queen", "king"
     public Dictionary<string, int[]> pieceCountDict = new Dictionary<string, int[]>()
     {
@@ -116,9 +115,9 @@ class virtualBoard
 public class EvalOpponent : AItemplate
 {
     private virtualBoard vboard = new virtualBoard();
-    int searchDepth = 3;
-    bool amWhite = true;
-    int aggresionMod = 1;
+    private int searchDepth = 3;
+    private bool amWhite = true;
+    private int aggresionMod = 1;
     private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>()
     {
         {"pawn", 10},

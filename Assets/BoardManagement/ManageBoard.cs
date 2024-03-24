@@ -24,7 +24,7 @@ public partial class ManageBoard : MonoBehaviour
     public bool isPlayerWhite = true;
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
-    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(2);
+    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(5, false);
     public EvalOpponent whiteAI = new EvalOpponent(2);
 
     private string[,] board = new string[8,8];
