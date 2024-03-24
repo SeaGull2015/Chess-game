@@ -50,7 +50,6 @@ public partial class ManageBoard
             checkKingDeath(epicMove);
         }
 
-        moveSound.Play();
         whiteTurn = !whiteTurn;
     }
     public void lightUpSquares(Vector3 where)
@@ -150,6 +149,14 @@ public partial class ManageBoard
         else
         {
             blackPieces.Add(pc);
+        }
+    }
+
+    public void triggerStop()
+    {
+        foreach (var pieces in pieces)
+        {
+            if (pieces != null) pieces.canMove = false;
         }
     }
 }

@@ -14,6 +14,8 @@ public class PieceBehaviour : MonoBehaviour
     public GameObject boardManager;
     public bool isWhite;
     public bool canMove = true;
+    public AudioSource audioMove;
+
     private ManageBoard board;
     private string figureType = "pawn";
     private string[] allowedTypes = { "pawn", "knight", "bishop", "rook", "queen", "king" }; // from https://www.chess.com/terms/chess-pieces
@@ -21,6 +23,12 @@ public class PieceBehaviour : MonoBehaviour
     private Vector3 clickDragOffset;
     private GameObject collisionPiece;
     private bool isCollided = false;
+    private float selfSpeed = 4f;
+    private Vector3 target;
+    private bool movementInProgress = false;
+    private bool moveToExtract = false;
+    private float extractDelay = 0.1f;
+    private float extractionTime = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +37,7 @@ public class PieceBehaviour : MonoBehaviour
         board = boardManager.GetComponent<ManageBoard>();
         name = isWhite ? figureType : figureType.ToUpper();
         board.addPieceToLists(this);
+        target = transform.position;
     }
     private void OnDestroy()
     {
@@ -38,7 +47,26 @@ public class PieceBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (movementInProgress)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, target, selfSpeed * Time.deltaTime * ((transform.position - target).magnitude + 1));
+            if (transform.position == target)
+            {
+                audioMove.Play();
+                movementInProgress = false;
+            }
+        }
+        if (moveToExtract)
+        {
+            extractionTime += Time.deltaTime;
+            if (extractionTime > extractDelay)
+            {
+                moveToExtract = false;
+                extractionTime = 0;
+                board.triggerStop();
+                board.extractMove(initPoint, transform.position, this);
+            }
+        }
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -73,14 +101,14 @@ public class PieceBehaviour : MonoBehaviour
             if (isCollided && (collisionPiece.transform.position - new Vector3(0, 0, 1) != initPoint))
             {
                 transform.position = collisionPiece.transform.position - new Vector3(0, 0, 1);
-                board.extractMove(initPoint, transform.position, this);
+                moveToExtract = true;
                 eat();
-
             }
             else
             {
                 transform.position = initPoint;
             }
+            audioMove.Play();
         }
     }
 
@@ -101,7 +129,8 @@ public class PieceBehaviour : MonoBehaviour
 
     public void move(int dx, int dy)
     {
-        transform.position = transform.position + new Vector3(dx, dy, 0);
+        target = transform.position + new Vector3(dx, dy, 0);
+        movementInProgress = true;
     }
 
     private void eat(GameObject Piece)
