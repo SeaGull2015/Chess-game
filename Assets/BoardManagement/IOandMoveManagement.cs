@@ -11,6 +11,14 @@ public partial class ManageBoard
 {
     private void nextMove()
     {
+        if (gameRestart)
+        {
+            foreach (var piece in pieces)
+            {
+                if (piece != null) piece.canMove = false;
+            }
+            return;
+        }
         foreach (var piece in pieces)
         {
             if (piece == null) continue;
@@ -39,8 +47,10 @@ public partial class ManageBoard
                 epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
             }
             MakeMove(epicMove);
+            checkKingDeath(epicMove);
         }
 
+        moveSound.Play();
         whiteTurn = !whiteTurn;
     }
     public void lightUpSquares(Vector3 where)
@@ -77,6 +87,8 @@ public partial class ManageBoard
         int posyFrom = Convert.ToInt32(from.y - startpositionY);
         int posxTo = Convert.ToInt32(to.x - startpositionX);
         int posyTo = Convert.ToInt32(to.y - startpositionY);
+
+        checkKingDeath(board[posxTo, posyTo]);
 
         pieces[posxFrom, posyFrom] = null;
         pieces[posxTo, posyTo] = who;

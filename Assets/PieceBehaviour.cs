@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 public class PieceBehaviour : MonoBehaviour
 {
     public BoxCollider2D thisCollider;
+    public Rigidbody2D thisRigidbody;
     public SpriteRenderer thisSpriteRenderer;
     public Sprite[] sprites;
     public GameObject boardManager;
