@@ -11,6 +11,14 @@ public partial class ManageBoard
 {
     private void nextMove()
     {
+        if (gameRestart)
+        {
+            foreach (var piece in pieces)
+            {
+                if (piece != null) piece.canMove = false;
+            }
+            return;
+        }
         foreach (var piece in pieces)
         {
             if (piece == null) continue;
@@ -24,25 +32,22 @@ public partial class ManageBoard
             }
         }
 
+        moves = MoveCalculator.generateAllMoves(board, whiteTurn); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
+        // actually no, the previous check controls player input, depending on whether it's ai turn or nay
+        // gotta also make a lister out of it instead of running it twice for ai
         if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
         {
             Move epicMove;
             if (whiteTurn)
             {
-                epicMove = whiteAI.getMove(true, lastMove, MoveCalculator.generateAllMovesListInterestingFirst(board, true));
+                epicMove = whiteAI.getMove(true, board, MoveCalculator.generateAllMovesListInterestingFirst(board, true));
             }
             else
             {
-                epicMove = blackAI.getMove(false, lastMove, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
+                epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
             }
             MakeMove(epicMove);
-            lastMove = epicMove;
-        }
-        else
-        {
-            moves = MoveCalculator.generateAllMoves(board, whiteTurn); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
-                // actually no, the previous check controls player input, depending on whether it's ai turn or nay
-                // gotta also make a lister out of it instead of running it twice for ai
+            checkKingDeath(epicMove);
         }
 
         whiteTurn = !whiteTurn;
@@ -81,7 +86,9 @@ public partial class ManageBoard
         int posyFrom = Convert.ToInt32(from.y - startpositionY);
         int posxTo = Convert.ToInt32(to.x - startpositionX);
         int posyTo = Convert.ToInt32(to.y - startpositionY);
-        lastMove = new Move(posxTo - posxFrom, posyTo - posyFrom, posxFrom, posyFrom, who.name, board[posxTo, posyTo]);
+
+        checkKingDeath(board[posxTo, posyTo]);
+
         pieces[posxFrom, posyFrom] = null;
         pieces[posxTo, posyTo] = who;
 
@@ -142,6 +149,14 @@ public partial class ManageBoard
         else
         {
             blackPieces.Add(pc);
+        }
+    }
+
+    public void triggerStop()
+    {
+        foreach (var pieces in pieces)
+        {
+            if (pieces != null) pieces.canMove = false;
         }
     }
 }

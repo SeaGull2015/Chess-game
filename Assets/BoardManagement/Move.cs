@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public struct Move
@@ -11,8 +12,7 @@ public struct Move
     public string piece;
     public string target;
     public List<Move> additionalTargets; // this is for en passant and maybe castling
-    public bool nullMove;
-    public Move(int tdx, int tdy, int sx, int sy, string who, string what, List<Move> addTarg = null, bool isNullMove = false)
+    public Move(int tdx, int tdy, int sx, int sy, string who, string what, List<Move> addTarg = null)
     {
         dx = tdx;
         dy = tdy;
@@ -21,18 +21,11 @@ public struct Move
         piece = who;
         target = what;
         additionalTargets = addTarg;
-        nullMove = isNullMove;
     }
-    public Move(bool isNullMove, int tdx = 0, int tdy = 0, int sx = 0, int sy = 0, string who = "", string what = "", List<Move> addTarg = null)
-    {
-        dx = tdx;
-        dy = tdy;
-        startx = sx;
-        starty = sy;
-        piece = who;
-        target = what;
-        additionalTargets = addTarg;
-        nullMove = true;
+    public bool Equals(Move other) // this is bad, but I haven't found a way to iterate over all struct's fields.
+    { // also this doesn't compare additional targets, mostly because situations where it is used shouldn't be repetetive (e.g. en passant)
+        // And this function, ideally, shouldn't be used for anything else.
+        return startx == other.startx && starty == other.starty && dx == other.dx && dy == other.dy && piece == other.piece && target == other.target;
     }
 }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
 
 
@@ -24,8 +25,9 @@ public partial class ManageBoard : MonoBehaviour
     public bool isPlayerWhite = true;
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
-    public EvalOpponent blackAI;
-    public EvalOpponent whiteAI;
+    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(3, false);
+    public EvalOpponent whiteAI = new EvalOpponent(2, true);
+    public VictoryTextLogic victoryTexter;
 
     private string[,] board = new string[8,8];
     private SquareBehaviour[,] squares = new SquareBehaviour[8,8];
@@ -33,13 +35,17 @@ public partial class ManageBoard : MonoBehaviour
     private List<PieceBehaviour> whitePieces = new List<PieceBehaviour>();
     private List<PieceBehaviour> blackPieces = new List<PieceBehaviour>();
     private List<Move>[,] moves = new List<Move>[8,8];
-    private Move lastMove = new Move(true);
+    private int moveCounter;
     private string defStart = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     private bool[] castles = new bool[4]
     {
         false, false, false, false
     }; // left black, right black, left white, right white.
     private System.Random rnd = new System.Random();
+    private bool gameRestart = false;
+    private int timeTillRestart = 5;
+    private int timeTillEffect = 1;
+    private bool effectDone = false;
     private float time = 0; 
 
 
@@ -47,7 +53,19 @@ public partial class ManageBoard : MonoBehaviour
     void Update()
     {
         time += Time.deltaTime;
-        if ((!whiteTurn && isWhiteAI) || (whiteTurn && isBlackAI))
+        if (gameRestart)
+        {
+            if (time > timeTillEffect) // nested ifs cause I don't wanna go in the else if thing if it's not time yet
+            {
+                if (!effectDone) gameoverEffect();
+                if (time > timeTillRestart)
+                {
+                    Physics2D.gravity = new Vector2();
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                }
+            }
+        }
+        else if ((!whiteTurn && isWhiteAI) || (whiteTurn && isBlackAI))
         {
             if (time > timeBetweenAIMoves)
             {

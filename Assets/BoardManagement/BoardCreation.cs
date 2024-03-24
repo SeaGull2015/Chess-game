@@ -17,6 +17,7 @@ public partial class ManageBoard
             board = FEN(defStart);
             putPieces(board);
         }
+        if (isWhiteAI) nextMove();
     }
     void createBoard()
     {
@@ -138,7 +139,5 @@ public partial class ManageBoard
             }
         }
         //nextMove();
-        whiteAI = new EvalOpponent(board);
-        blackAI = new EvalOpponent(board); 
     }
 }
