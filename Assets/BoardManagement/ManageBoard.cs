@@ -25,7 +25,7 @@ public partial class ManageBoard : MonoBehaviour
     public bool isPlayerWhite = true;
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
-    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(4, false);
+    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(3, false);
     public EvalOpponent whiteAI = new EvalOpponent(2, true);
     public VictoryTextLogic victoryTexter;
 
@@ -92,10 +92,16 @@ public partial class ManageBoard : MonoBehaviour
     public void promote(PieceBehaviour who, string toWhat)
     {
         if (!who.allowedTypes.Contains(toWhat)) throw new Exception("failed promotion - incorrect type");
-        int posx = Convert.ToInt32(who.transform.position.y);
-        int posy = Convert.ToInt32(who.transform.position.y);
+        int posx = Convert.ToInt32(who.initPoint.x - startpositionX);
+        int posy = Convert.ToInt32(who.initPoint.y - startpositionY);
         who.setType(toWhat);
 
-        board[posx, posy] = toWhat;        
+        board[posx, posy] = setColour(toWhat, who.isWhite);        
+    }
+
+    private string setColour(string what, bool toWhite)
+    {
+        if (toWhite) { return what.ToLower(); }
+        else return what.ToUpper();
     }
 }

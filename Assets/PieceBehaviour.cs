@@ -92,7 +92,7 @@ public class PieceBehaviour : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (canMove)
+        if (canMove && !selectionInProgress)
         {
             initPoint = transform.position;
             clickDragOffset = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
@@ -102,12 +102,12 @@ public class PieceBehaviour : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        if (canMove) transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) - clickDragOffset;
+        if (canMove && !selectionInProgress) transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) - clickDragOffset;
     }
 
     private void OnMouseUp()
     {
-        if (canMove)
+        if (canMove && !selectionInProgress)
         {
             board.lightDownSquares(initPoint);
             if (isCollided && (collisionPiece.transform.position - new Vector3(0, 0, 1) != initPoint))

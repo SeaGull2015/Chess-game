@@ -25,6 +25,7 @@ public class promotionSelectScript : MonoBehaviour
         transform.position = new Vector3(x, y, 0);
         caller = whoCalled;
         gameObject.SetActive(true);
+        myDown.value = 0;
         myDown.onValueChanged.AddListener(delegate
         {
             onSelection(myDown);
@@ -34,6 +35,8 @@ public class promotionSelectScript : MonoBehaviour
     private void onSelection(TMP_Dropdown change)
     {
         caller.recallPromotion(change.options[change.value].text.ToLower());
+        caller = null;
+        myDown.onValueChanged.RemoveAllListeners();
         gameObject.SetActive(false);
     }
 }
