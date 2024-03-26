@@ -13,12 +13,12 @@ public class AlphaBetaOpponent : AItemplate
     int aggresionMod = 1;
     private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>() // too bad the only way to make a const dictionary is using a switch case, huh?
     {
-        {"pawn", 10},
-        {"knight", 25},
-        {"bishop", 25},
-        {"rook", 40},
-        {"queen", 100},
-        {"king", 2000},
+        {"pawn", 100},
+        {"knight", 250},
+        {"bishop", 250},
+        {"rook", 400},
+        {"queen", 1000},
+        {"king", 20000},
         {"empty", 0} // don't care
     };
 
@@ -152,7 +152,7 @@ public class AlphaBetaOpponent : AItemplate
     {
         // analysis of positions is taken from https://www.chessprogramming.org/Simplified_Evaluation_Function , many thanks to the author
         piecePositionPairs["pawn"] = new int[8, 8]
-            {{ 0,  0,  0,  0,  0,  0,  0,  0},
+            {{ pieceValuePairs["queen"],  pieceValuePairs["queen"],  pieceValuePairs["queen"],  pieceValuePairs["queen"],  pieceValuePairs["queen"],  pieceValuePairs["queen"],  pieceValuePairs["queen"],  pieceValuePairs["queen"]},
             {50, 50, 50, 50, 50, 50, 50, 50},
             {10, 10, 20, 30, 30, 20, 10, 10},
             { 5,  5, 10, 25, 25, 10,  5,  5},

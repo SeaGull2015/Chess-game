@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,13 +14,15 @@ public class PieceBehaviour : MonoBehaviour
     public Sprite[] sprites;
     public GameObject boardManager;
     public bool isWhite;
-    public bool canMove = true;
+    public bool canMove = false;
     public AudioSource audioMove;
+    public string[] allowedTypes = { "pawn", "knight", "bishop", "rook", "queen", "king" };// from https://www.chess.com/terms/chess-pieces
+    public Vector3 initPoint;
 
+    private promotionSelectScript dropDown;
     private ManageBoard board;
     private string figureType = "pawn";
-    private string[] allowedTypes = { "pawn", "knight", "bishop", "rook", "queen", "king" }; // from https://www.chess.com/terms/chess-pieces
-    private Vector3 initPoint;
+
     private Vector3 clickDragOffset;
     private GameObject collisionPiece;
     private bool isCollided = false;
@@ -29,6 +32,7 @@ public class PieceBehaviour : MonoBehaviour
     private bool moveToExtract = false;
     private float extractDelay = 0.1f;
     private float extractionTime = 0;
+    private bool selectionInProgress = false;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +42,8 @@ public class PieceBehaviour : MonoBehaviour
         name = isWhite ? figureType : figureType.ToUpper();
         board.addPieceToLists(this);
         target = transform.position;
+
+        dropDown = GameObject.FindObjectsOfType<promotionSelectScript>(true)[0]; 
     }
     private void OnDestroy()
     {
@@ -56,7 +62,7 @@ public class PieceBehaviour : MonoBehaviour
                 movementInProgress = false;
             }
         }
-        if (moveToExtract)
+        if (moveToExtract && !selectionInProgress)
         {
             extractionTime += Time.deltaTime;
             if (extractionTime > extractDelay)
@@ -67,6 +73,12 @@ public class PieceBehaviour : MonoBehaviour
                 board.extractMove(initPoint, transform.position, this);
             }
         }
+    }
+
+    public void recallPromotion(string result)
+    {
+        board.promote(this, result);
+        selectionInProgress = false;
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -108,6 +120,13 @@ public class PieceBehaviour : MonoBehaviour
             {
                 transform.position = initPoint;
             }
+
+            if (board.checkPromotion(this))
+            {
+                dropDown.setNewSelect(Camera.main.WorldToScreenPoint(transform.position).x, Camera.main.WorldToScreenPoint(transform.position).y, this);
+                selectionInProgress = true;
+            }
+
             audioMove.Play();
         }
     }
@@ -143,6 +162,7 @@ public class PieceBehaviour : MonoBehaviour
         if (allowedTypes.Contains(type))
         {
             figureType = type;
+            gameObject.name = type;
             updateSprite();
             return true;
         }
