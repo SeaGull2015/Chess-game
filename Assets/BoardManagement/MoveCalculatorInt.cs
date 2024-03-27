@@ -39,6 +39,7 @@ static class MoveCalculatorInt
     static public int blackID = 128;
     static public int maxID = 255;
     static public int[] IDarray = new int[] {emptyID, pawnID, knightID, bishopID, rookID, queenID, kingID, blackID, maxID };
+    static public int[] IDtypeArray = new int[] {pawnID, knightID, bishopID, rookID, queenID, kingID};
     static public Dictionary<string, int> conversionIDdict = new Dictionary<string, int>()
     {
             {"pawn", pawnID}, 
@@ -111,6 +112,7 @@ static class MoveCalculatorInt
     {
         List<MoveInt> moves = new List<MoveInt>();
         board = brd;
+        thisWhite = whiteTurn;
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -129,6 +131,7 @@ static class MoveCalculatorInt
     {
         List<MoveInt> moves = new List<MoveInt>();
         board = brd;
+        thisWhite = whiteTurn;
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)

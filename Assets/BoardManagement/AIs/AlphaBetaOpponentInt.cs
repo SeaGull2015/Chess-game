@@ -121,7 +121,7 @@ public class AlphaBetaOpponentInt : AItemplate
         //rs += vboard.rookCount[colourIndex] * pieceValuePairs["rook"];
         //rs += vboard.queenCount[colourIndex] * pieceValuePairs["queen"];
         //rs += vboard.kingCount[colourIndex] * pieceValuePairs["king"];
-        foreach (var ID in MoveCalculatorInt.IDarray)
+        foreach (var ID in MoveCalculatorInt.IDtypeArray)
         {
             rs += vboard.pieceCountArray[ID + offsetIndex] * pieceValuePairsArray[ID];
         }
@@ -203,9 +203,8 @@ public class AlphaBetaOpponentInt : AItemplate
 
         if (!amWhite)
         {
-            foreach (var ID in MoveCalculatorInt.IDarray)
+            foreach (var ID in MoveCalculatorInt.IDtypeArray)
             {
-                if (ID == MoveCalculatorInt.emptyID || ID == MoveCalculatorInt.maxID) continue;
                 piecePositionPairsArray[ID + MoveCalculatorInt.blackID] = rotatePiecePositionPairs(piecePositionPairsArray[ID]);
             }
 

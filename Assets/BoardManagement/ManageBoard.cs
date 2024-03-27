@@ -25,7 +25,7 @@ public partial class ManageBoard : MonoBehaviour
     public bool isPlayerWhite = true;
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
-    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(5, false);
+    public AlphaBetaOpponentInt blackAI = new AlphaBetaOpponentInt(5, false);
     public EvalOpponent whiteAI = new EvalOpponent(2, true);
     public VictoryTextLogic victoryTexter;
 

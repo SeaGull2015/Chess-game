@@ -31,11 +31,15 @@ public struct Move
         starty = mv.starty;
         piece = MoveCalculatorInt.reverseConversionIDdict[mv.piece];
         target = MoveCalculatorInt.reverseConversionIDdict[mv.target];
-        additionalTargets = new List<Move>();
-        foreach (MoveInt submove in mv.additionalTargets)
+        if (mv.additionalTargets != null)
         {
-            additionalTargets.Add(new Move(submove));
+            additionalTargets = new List<Move>();
+            foreach (MoveInt submove in mv.additionalTargets)
+            {
+                additionalTargets.Add(new Move(submove));
+            }
         }
+        else additionalTargets = null;
     }
     public bool Equals(Move other) // this is bad, but I haven't found a way to iterate over all struct's fields.
     { // also this doesn't compare additional targets, mostly because situations where it is used shouldn't be repetetive (e.g. en passant)
