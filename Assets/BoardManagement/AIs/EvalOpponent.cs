@@ -4,24 +4,6 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class Pair<T1, T2>
-{
-    public T1 first
-    {
-        get;
-        set;
-    }
-    public T2 second
-    {
-        get;
-        set;
-    }
-    public Pair(T1 First, T2 Second)
-    {
-        first = First;
-        second = Second;
-    }
-}
 class virtualBoard
 {
     public string[,] board = new string[8, 8]; // "pawn", "knight", "bishop", "rook", "queen", "king"

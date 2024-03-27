@@ -29,10 +29,59 @@ static class MoveCalculatorInt
 {
     static int[,] board = new int[8, 8];
     static bool thisWhite;
-
-    static private bool checkWhite(int x)
+    static public int emptyID = 0; // kinda ugly but I don't wanna make adress some other singleton object or static because of potential performance issues
+    static public int pawnID = 2; // also this should be somewhere else, imho. Maybe in board manager, idk
+    static public int knightID = 4;
+    static public int bishopID = 8;
+    static public int rookID = 16;
+    static public int queenID = 32;
+    static public int kingID = 64;
+    static public int blackID = 128;
+    static public int maxID = 255;
+    static public int[] IDarray = new int[] {emptyID, pawnID, knightID, bishopID, rookID, queenID, kingID, blackID, maxID };
+    static public Dictionary<string, int> conversionIDdict = new Dictionary<string, int>()
     {
-        return (x & 128) == 0;
+            {"pawn", pawnID}, 
+            {"knight", knightID}, 
+            {"bishop", bishopID}, 
+            {"rook", rookID}, 
+            {"queen", queenID}, 
+            {"king", kingID}, 
+            {"PAWN", pawnID + blackID}, 
+            {"KNIGHT", knightID + blackID}, 
+            {"BISHOP", bishopID + blackID}, 
+            {"ROOK", rookID + blackID}, 
+            {"QUEEN", queenID + blackID}, 
+            {"KING", kingID + blackID}, 
+            {"empty", emptyID} 
+    };
+
+    static public Dictionary<int, string> reverseConversionIDdict = new Dictionary<int, string>()
+    {
+         {pawnID, "pawn"},
+         {knightID, "knight"},
+         {bishopID, "bishop"},
+         {rookID, "rook"},
+         {queenID, "queen"},
+         {kingID, "king"},
+         {pawnID + blackID, "PAWN"},
+         {knightID + blackID, "KNIGHT"},
+         {bishopID + blackID, "BISHOP"},
+         {rookID + blackID, "ROOK"},
+         {queenID + blackID, "QUEEN"},
+         {kingID + blackID, "KING"},
+         {emptyID, "empty"}
+    };
+
+
+    static public bool checkWhite(int x)
+    {
+        return (x & blackID) == 0;
+    }
+
+    static public int getTypeWithoutColour(int x)
+    {
+        return ((x << 1) & maxID) >> 1;
     }
 
     static public List<MoveInt>[,] generateAllMoves(int[,] brd, bool whiteTurn)
@@ -44,7 +93,7 @@ static class MoveCalculatorInt
         {
             for (int j = 0; j < 8; j++)
             {
-                if (board[i, j] == 0) continue;
+                if (board[i, j] == emptyID) continue;
                 else if (checkWhite(board[i,j]) == whiteTurn)
                 {
                     moves[i, j] = getMoves(i, j);
@@ -84,13 +133,13 @@ static class MoveCalculatorInt
         {
             for (int j = 0; j < 8; j++)
             {
-                if (board[i, j] == 0) continue;
+                if (board[i, j] == emptyID) continue;
                 else if (checkWhite(board[i, j]) == whiteTurn)
                 {
                     List<MoveInt> tlist = getMoves(i, j);
                     foreach (MoveInt mv in tlist)
                     {
-                        if (mv.target != 0) moves.Insert(0, mv);
+                        if (mv.target != emptyID) moves.Insert(0, mv);
                         else moves.Add(mv);
                     }
                 }
@@ -106,23 +155,23 @@ static class MoveCalculatorInt
     static public List<MoveInt> getMoves(int x, int y, int[,] brd)
     {
         board = brd;
-        int type = ((board[x, y] << 1) & 255) >> 1; // basicly getting rid off the leading 1 or 0, because colour doesn't matter here
-        int[] sliders = { 8, 32, 16 };
+        int type = getTypeWithoutColour(board[x,y]); // basicly getting rid off the leading 1 or 0, because colour doesn't matter here
+        int[] sliders = { bishopID, queenID, rookID };
         if (sliders.Contains(type)) return getSlidingMoves(x, y, type);
-        else if (type == 2) return getPawnMoves(x, y);
-        else if (type == 64) return getKingMoves(x, y);
-        else if (type == 4) return getKnightMoves(x, y);
+        else if (type == pawnID) return getPawnMoves(x, y);
+        else if (type == kingID) return getKingMoves(x, y);
+        else if (type == knightID) return getKnightMoves(x, y);
         else throw new Exception("getMoves() bad type"); /*return new List<MoveInt>();*/
     }
 
     static private List<MoveInt> getMoves(int x, int y)
     {
-        int type = ((board[x, y] << 1) & 255) >> 1; // basicly getting rid off the leading 1, because colour doesn't matter here
-        int[] sliders = { 8, 32, 16 };
+        int type = ((board[x, y] << 1) & maxID) >> 1; // basicly getting rid off the leading 1, because colour doesn't matter here
+        int[] sliders = { bishopID, queenID, rookID };
         if (sliders.Contains(type)) return getSlidingMoves(x, y, type);
-        else if (type == 2) return getPawnMoves(x, y);
-        else if (type == 64) return getKingMoves(x, y);
-        else if (type == 4) return getKnightMoves(x, y);
+        else if (type == pawnID) return getPawnMoves(x, y);
+        else if (type == kingID) return getKingMoves(x, y);
+        else if (type == knightID) return getKnightMoves(x, y);
         else throw new Exception("getMoves() bad type"); /*return new List<MoveInt>();*/
     }
     static private MoveInt directSlidingMove(int distance, int dir, int sx, int sy) // this kinda sucks
@@ -144,14 +193,14 @@ static class MoveCalculatorInt
 
         int[] dirs = dirLen(x, y);
 
-        if (type == 8 || type == 32) // the following code somewhat sucks, but as of now I don't have ideas how to implement it better
+        if (type == bishopID || type == queenID) // the following code somewhat sucks, but as of now I don't have ideas how to implement it better
         {
             for (int i = 4; i < 8; i++)
             {
                 for (int j = 1; j <= dirs[i]; j++)
                 {
                     MoveInt tMove = directSlidingMove(j, i, x, y);
-                    if (board[x + tMove.dx, y + tMove.dy] == 0) res.Add(tMove);
+                    if (board[x + tMove.dx, y + tMove.dy] == emptyID) res.Add(tMove);
                     else if (checkWhite(board[x + tMove.dx, y + tMove.dy]) == thisWhite) break;
                     else if (checkWhite(board[x + tMove.dx, y + tMove.dy]) != thisWhite)
                     {
@@ -161,14 +210,14 @@ static class MoveCalculatorInt
                 }
             }
         }
-        if (type == 16 || type == 32)
+        if (type == rookID || type == queenID)
         {
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 1; j <= dirs[i]; j++)
                 {
                     MoveInt tMove = directSlidingMove(j, i, x, y);
-                    if (board[x + tMove.dx, y + tMove.dy] == 0) res.Add(tMove);
+                    if (board[x + tMove.dx, y + tMove.dy] == emptyID) res.Add(tMove);
                     else if (checkWhite(board[x + tMove.dx, y + tMove.dy]) == thisWhite) break;
                     else if (checkWhite(board[x + tMove.dx, y + tMove.dy]) != thisWhite)
                     {
@@ -190,20 +239,20 @@ static class MoveCalculatorInt
         int yLim = thisWhite ? 7 : 0;
         int startYlvl = thisWhite ? 1 : 6;
 
-        if (y != yLim && board[x, y + dir] == 0)
+        if (y != yLim && board[x, y + dir] == emptyID)
         {
             res.Add(new MoveInt(0, dir, x, y, board[x, y], board[x, y + dir]));
-            if (y == startYlvl && board[x, y + dir * 2] == 0)
+            if (y == startYlvl && board[x, y + dir * 2] == emptyID)
             {
                 res.Add(new MoveInt(0, dir * 2, x, y, board[x, y], board[x, y + dir * 2]));
             }
         }
 
-        if (y != yLim && x < 7 && board[x + 1, y + dir] != 0 && thisWhite != checkWhite(board[x + 1, y + dir])) // I would rather have y < 7 or y > 0, but it would be ugly, so y != yLim
+        if (y != yLim && x < 7 && board[x + 1, y + dir] != emptyID && thisWhite != checkWhite(board[x + 1, y + dir])) // I would rather have y < 7 or y > 0, but it would be ugly, so y != yLim
         {
             res.Add(new MoveInt(1, dir, x, y, board[x, y], board[x + 1, y + dir]));
         }
-        if (y != yLim && x > 0 && board[x - 1, y + dir] != 0 && thisWhite != checkWhite(board[x - 1, y + dir]))
+        if (y != yLim && x > 0 && board[x - 1, y + dir] != emptyID && thisWhite != checkWhite(board[x - 1, y + dir]))
         {
             res.Add(new MoveInt(-1, dir, x, y, board[x, y], board[x - 1, y + dir]));
         }
@@ -233,7 +282,7 @@ static class MoveCalculatorInt
         {
             if (x + dx[i] >= 0 && x + dx[i] < 8 &&
                 y + dy[i] >= 0 && y + dy[i] < 8 &&
-                (board[x + dx[i], y + dy[i]] == 0 ||
+                (board[x + dx[i], y + dy[i]] == emptyID ||
                 checkWhite(board[x + dx[i], y + dy[i]]) != thisWhite))
             {
                 res.Add(new MoveInt(dx[i], dy[i], x, y, board[x, y], board[x + dx[i], y + dy[i]]));
@@ -255,7 +304,7 @@ static class MoveCalculatorInt
         {
             if (x + dx[i] >= 0 && x + dx[i] < 8 &&
                 y + dy[i] >= 0 && y + dy[i] < 8 &&
-                (board[x + dx[i], y + dy[i]] == 0 ||
+                (board[x + dx[i], y + dy[i]] == emptyID ||
                 checkWhite(board[x + dx[i], y + dy[i]]) != thisWhite))
             {
                 res.Add(new MoveInt(dx[i], dy[i], x, y, board[x, y], board[x + dx[i], y + dy[i]]));
