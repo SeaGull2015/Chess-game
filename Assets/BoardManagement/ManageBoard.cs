@@ -25,7 +25,7 @@ public partial class ManageBoard : MonoBehaviour
     public bool isPlayerWhite = true;
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
-    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(3, false);
+    public AlphaBetaOpponent blackAI = new AlphaBetaOpponent(5, false);
     public EvalOpponent whiteAI = new EvalOpponent(2, true);
     public VictoryTextLogic victoryTexter;
 
@@ -46,7 +46,8 @@ public partial class ManageBoard : MonoBehaviour
     private int timeTillRestart = 5;
     private int timeTillEffect = 1;
     private bool effectDone = false;
-    private float time = 0; 
+    private float time = 0;
+    private Move lastMove;
 
 
     // Update is called once per frame
@@ -75,33 +76,14 @@ public partial class ManageBoard : MonoBehaviour
         }
     }
 
-    public bool checkPromotion(PieceBehaviour who)
-    {
-        if (who.getType().ToLower() != "pawn") return false;
-        int posy = Convert.ToInt32(who.transform.position.y - startpositionY);
-        if ((who.isWhite && posy == 7) || (!who.isWhite && posy == 0))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    
-    public void promote(PieceBehaviour who, string toWhat)
-    {
-        if (!who.allowedTypes.Contains(toWhat)) throw new Exception("failed promotion - incorrect type");
-        int posx = Convert.ToInt32(who.initPoint.x - startpositionX);
-        int posy = Convert.ToInt32(who.initPoint.y - startpositionY);
-        who.setType(toWhat);
 
-        board[posx, posy] = setColour(toWhat, who.isWhite);        
-    }
-
-    private string setColour(string what, bool toWhite)
+    private void checkEnPassant(Move mv)
     {
-        if (toWhite) { return what.ToLower(); }
-        else return what.ToUpper();
+        if (mv.piece.ToLower() != "pawn") return;
+        if (board[mv.startx + mv.dx, mv.starty + mv.dy] == "empty")
+        {
+            Destroy(pieces[mv.startx + mv.dx, mv.starty]);
+            board[mv.startx + mv.dx, mv.starty] = "empty";
+        }
     }
 }

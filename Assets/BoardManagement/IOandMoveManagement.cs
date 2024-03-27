@@ -50,6 +50,7 @@ public partial class ManageBoard
             checkKingDeath(epicMove);
         }
 
+
         whiteTurn = !whiteTurn;
     }
     public void lightUpSquares(Vector3 where)
@@ -87,7 +88,9 @@ public partial class ManageBoard
         int posxTo = Convert.ToInt32(to.x - startpositionX);
         int posyTo = Convert.ToInt32(to.y - startpositionY);
 
-        checkKingDeath(board[posxTo, posyTo]);
+        lastMove = new Move(posxTo - posxFrom, posyTo - posyFrom, posxFrom, posyFrom, who.getType(), board[posxTo, posyTo]);
+        checkKingDeath(board[posxTo, posyTo]); // this can use mv actually, but it works and I don't wanna touch it
+        checkEnPassant(lastMove);
 
         pieces[posxFrom, posyFrom] = null;
         pieces[posxTo, posyTo] = who;
@@ -125,6 +128,7 @@ public partial class ManageBoard
         pieces[mv.startx, mv.starty] = null;
 
         pieces[targX, targY].move(mv.dx, mv.dy);
+        lastMove = mv;
         //nextMove();
     }
     
@@ -158,5 +162,34 @@ public partial class ManageBoard
         {
             if (pieces != null) pieces.canMove = false;
         }
+    }
+    public bool checkPromotion(PieceBehaviour who)
+    {
+        if (who.getType().ToLower() != "pawn") return false;
+        int posy = Convert.ToInt32(who.transform.position.y - startpositionY);
+        if ((who.isWhite && posy == 7) || (!who.isWhite && posy == 0))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void promote(PieceBehaviour who, string toWhat)
+    {
+        if (!who.allowedTypes.Contains(toWhat)) throw new Exception("failed promotion - incorrect type");
+        int posx = Convert.ToInt32(who.initPoint.x - startpositionX);
+        int posy = Convert.ToInt32(who.initPoint.y - startpositionY);
+        who.setType(toWhat);
+
+        board[posx, posy] = setColour(toWhat, who.isWhite);
+    }
+
+    private string setColour(string what, bool toWhite)
+    {
+        if (toWhite) { return what.ToLower(); }
+        else return what.ToUpper();
     }
 }
