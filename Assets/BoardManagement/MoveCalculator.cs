@@ -9,17 +9,6 @@ static class MoveCalculator
 {
     static string[,] board = new string[8, 8];
 
-    static private Dictionary<string, int> pieceValuePairs = new Dictionary<string, int>() // too bad the only way to make a const dictionary is using a switch case, huh?
-    {
-        {"pawn", 10},
-        {"knight", 25},
-        {"bishop", 25},
-        {"rook", 40},
-        {"queen", 100},
-        {"king", 200},
-        {"empty", 0} // don't care
-    };
-
     static public List<Move>[,] generateAllMoves(string[,] brd, bool whiteTurn)
     {
         List<Move>[,] moves = new List<Move>[8,8];
