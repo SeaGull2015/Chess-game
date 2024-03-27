@@ -46,8 +46,7 @@ public partial class ManageBoard : MonoBehaviour
     private int timeTillRestart = 5;
     private int timeTillEffect = 1;
     private bool effectDone = false;
-    private float time = 0;
-    private Move lastMove;
+    private float time = 0; 
 
 
     // Update is called once per frame
@@ -76,14 +75,33 @@ public partial class ManageBoard : MonoBehaviour
         }
     }
 
-
-    private void checkEnPassant(Move mv)
+    public bool checkPromotion(PieceBehaviour who)
     {
-        if (mv.piece.ToLower() != "pawn") return;
-        if (board[mv.startx + mv.dx, mv.starty + mv.dy] == "empty")
+        if (who.getType().ToLower() != "pawn") return false;
+        int posy = Convert.ToInt32(who.transform.position.y - startpositionY);
+        if ((who.isWhite && posy == 7) || (!who.isWhite && posy == 0))
         {
-            Destroy(pieces[mv.startx + mv.dx, mv.starty]);
-            board[mv.startx + mv.dx, mv.starty] = "empty";
+            return true;
         }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public void promote(PieceBehaviour who, string toWhat)
+    {
+        if (!who.allowedTypes.Contains(toWhat)) throw new Exception("failed promotion - incorrect type");
+        int posx = Convert.ToInt32(who.initPoint.x - startpositionX);
+        int posy = Convert.ToInt32(who.initPoint.y - startpositionY);
+        who.setType(toWhat);
+
+        board[posx, posy] = setColour(toWhat, who.isWhite);        
+    }
+
+    private string setColour(string what, bool toWhite)
+    {
+        if (toWhite) { return what.ToLower(); }
+        else return what.ToUpper();
     }
 }
