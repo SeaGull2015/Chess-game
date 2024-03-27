@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
@@ -18,6 +19,7 @@ public partial class ManageBoard
             putPieces(board);
         }
         if (isWhiteAI) Invoke("nextMove", 0.1f);
+        //if (!isWhiteAI && !isBlackAI) Invoke("nextMove", 0.1f);
     }
     void createBoard()
     {
@@ -32,6 +34,17 @@ public partial class ManageBoard
                 sqBehav.updateColor();
 
                 squares[tX, tY] = sqBehav;
+
+                if (tX == 0)
+                {
+                    TMP_Text txt = Instantiate(indexPrefab, Camera.main.WorldToScreenPoint(transform.position + new Vector3(tX + startpositionX - 1, tY + startpositionY, +1)), transform.rotation, canvi.transform);
+                    txt.SetText((tY+1).ToString());
+                }
+                if (tY == 0)
+                {
+                    TMP_Text txt = Instantiate(indexPrefab, Camera.main.WorldToScreenPoint(transform.position + new Vector3(tX + startpositionX, tY + startpositionY - 1, +1)), transform.rotation, canvi.transform);
+                    txt.SetText(((char)('a' + tX)).ToString());
+                }
             }
         }
     }

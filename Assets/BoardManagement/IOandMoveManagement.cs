@@ -125,6 +125,11 @@ public partial class ManageBoard
         pieces[mv.startx, mv.starty] = null;
 
         pieces[targX, targY].move(mv.dx, mv.dy);
+
+        if (board[targX, targY].ToLower() == "pawn" && (isWhite(board[targX, targY]) ? targY == 7 : targY == 0))
+        {
+            promote(targX, targY, "queen");
+        }
         //nextMove();
     }
     

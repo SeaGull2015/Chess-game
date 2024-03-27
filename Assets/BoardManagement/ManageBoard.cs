@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,9 +26,11 @@ public partial class ManageBoard : MonoBehaviour
     public bool isPlayerWhite = true;
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
-    public AlphaBetaOpponentInt blackAI = new AlphaBetaOpponentInt(5, false);
+    public EvalOpponent blackAI = new EvalOpponent(2, false);
     public EvalOpponent whiteAI = new EvalOpponent(2, true);
     public VictoryTextLogic victoryTexter;
+    public TMP_Text indexPrefab;
+    public Canvas canvi;
 
     private string[,] board = new string[8,8];
     private SquareBehaviour[,] squares = new SquareBehaviour[8,8];
@@ -97,6 +100,15 @@ public partial class ManageBoard : MonoBehaviour
         who.setType(toWhat);
 
         board[posx, posy] = setColour(toWhat, who.isWhite);        
+    }
+
+    public void promote(int x, int y, string toWhat)
+    {
+        int posx = x;
+        int posy = y;
+        pieces[x,y].setType(toWhat);
+
+        board[posx, posy] = setColour(toWhat, isWhite(board[x,y]));
     }
 
     private string setColour(string what, bool toWhite)

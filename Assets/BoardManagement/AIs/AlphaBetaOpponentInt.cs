@@ -201,14 +201,9 @@ public class AlphaBetaOpponentInt : AItemplate
         setpieceValuePairsArray();
 
 
-        if (!amWhite)
+        foreach (var ID in MoveCalculatorInt.IDtypeArray)
         {
-            foreach (var ID in MoveCalculatorInt.IDtypeArray)
-            {
-                piecePositionPairsArray[ID + MoveCalculatorInt.blackID] = rotatePiecePositionPairs(piecePositionPairsArray[ID]);
-            }
-
-            //piecePositionPairsArray[MoveCalculatorInt.kingID + 1] = rotatePiecePositionPairs(piecePositionPairsArray[MoveCalculatorInt.kingID + 1]);
+            piecePositionPairsArray[ID + MoveCalculatorInt.blackID] = rotatePiecePositionPairs(piecePositionPairsArray[ID]);
         }
     }
     ~AlphaBetaOpponentInt()

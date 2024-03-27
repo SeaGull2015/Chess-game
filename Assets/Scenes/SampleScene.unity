@@ -1795,6 +1795,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: canvi
+      value: 
+      objectReference: {fileID: 938718336}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
       propertyPath: isBlackAI
       value: 1
       objectReference: {fileID: 0}
@@ -1810,6 +1814,10 @@ PrefabInstance:
       propertyPath: boardPiece
       value: 
       objectReference: {fileID: 3682134663511102704, guid: b4de1e79934d4a54398f8b6217111add, type: 3}
+    - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
+      propertyPath: indexPrefab
+      value: 
+      objectReference: {fileID: 8189348674305245375, guid: a4be246a254a1d342b42159c740bee38, type: 3}
     - target: {fileID: 3682056208095256398, guid: e03d2428182723f48bc1bec42e337c63, type: 3}
       propertyPath: isPlayerWhite
       value: 0
