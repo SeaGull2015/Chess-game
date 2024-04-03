@@ -26,8 +26,8 @@ public partial class ManageBoard : MonoBehaviour
     public bool isPlayerWhite = true;
     public bool whiteTurn = true;
     public float timeBetweenAIMoves = 0f;
-    public EvalOpponent blackAI = new EvalOpponent(2, false);
-    public EvalOpponent whiteAI = new EvalOpponent(2, true);
+    public AItemplate blackAI = new EvalOpponent(2, false);
+    public AItemplate whiteAI = new EvalOpponent(2, true);
     public VictoryTextLogic victoryTexter;
     public TMP_Text indexPrefab;
     public Canvas canvi;
@@ -64,7 +64,7 @@ public partial class ManageBoard : MonoBehaviour
                 if (time > timeTillRestart)
                 {
                     Physics2D.gravity = new Vector2();
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                    SceneManager.LoadScene("mainMenu");
                 }
             }
         }

@@ -12,14 +12,16 @@ public partial class ManageBoard
 {
     void Start()
     {
+        setAI();
         if (needBoard)
         {
             createBoard();
             board = FEN(defStart);
             putPieces(board);
         }
+        if (isWhiteAI && isBlackAI) { timeBetweenAIMoves = 0.4f; }
         if (isWhiteAI) Invoke("nextMove", 0.1f);
-        //if (!isWhiteAI && !isBlackAI) Invoke("nextMove", 0.1f);
+        if (!isWhiteAI && !isBlackAI) Invoke("nextMove", 0.1f);
     }
     void createBoard()
     {
@@ -152,5 +154,50 @@ public partial class ManageBoard
             }
         }
         //nextMove();
+    }
+
+    void setAI()
+    {
+        string r = PlayerPrefs.GetString("blackAIstr");
+        switch (r)
+        {
+            case "Player":
+                isBlackAI = false;
+                break;
+            case "Easy":
+                blackAI = new RandomerOpponent();
+                isBlackAI = true;
+                break;
+            case "Medium":
+                blackAI = new AlphaBetaOpponentInt(2, false);
+                isBlackAI = true;
+                break;
+            case "Hard":
+                blackAI = new AlphaBetaOpponentInt(4, false);
+                isBlackAI = true;
+                break;
+            default:
+                throw new Exception("player pref trouble");
+        }
+        switch (PlayerPrefs.GetString("whiteAIstr"))
+        {
+            case "Player":
+                isWhiteAI = false;
+                break;
+            case "Easy":
+                whiteAI = new RandomerOpponent();
+                isWhiteAI = true;
+                break;
+            case "Medium":
+                whiteAI = new AlphaBetaOpponentInt(2, false);
+                isWhiteAI = true;
+                break;
+            case "Hard":
+                whiteAI = new AlphaBetaOpponentInt(4, false);
+                isWhiteAI = true;
+                break;
+            default:
+                throw new Exception("player pref trouble");
+        }
     }
 }
