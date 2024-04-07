@@ -12,6 +12,7 @@ public struct Move
     public string piece;
     public string target;
     public List<Move> additionalTargets; // this is for en passant and maybe castling
+
     public Move(int tdx, int tdy, int sx, int sy, string who, string what, List<Move> addTarg = null)
     {
         dx = tdx;

@@ -8,9 +8,11 @@ using UnityEngine;
 static class MoveCalculator
 {
     static string[,] board = new string[8, 8];
+    static Move lastMove;
 
-    static public List<Move>[,] generateAllMoves(string[,] brd, bool whiteTurn)
+    static public List<Move>[,] generateAllMoves(string[,] brd, bool whiteTurn, Move lstMv = new Move())
     {
+        lastMove = lstMv;
         List<Move>[,] moves = new List<Move>[8,8];
         board = brd;
         for (int i = 0; i < 8; i++)
@@ -31,8 +33,9 @@ static class MoveCalculator
         return moves;
     }
 
-    static public List<Move> generateAllMovesList(string[,] brd, bool whiteTurn)
+    static public List<Move> generateAllMovesList(string[,] brd, bool whiteTurn, Move lstMv = new Move())
     {
+        lastMove = lstMv;
         List<Move> moves = new List<Move>();
         board = brd;
         for (int i = 0; i < 8; i++)
@@ -49,8 +52,9 @@ static class MoveCalculator
         return moves;
     }
 
-    static public List<Move> generateAllMovesListInterestingFirst(string[,] brd, bool whiteTurn)
+    static public List<Move> generateAllMovesListInterestingFirst(string[,] brd, bool whiteTurn, Move lstMv = new Move())
     {
+        lastMove = lstMv;
         List<Move> moves = new List<Move>();
         board = brd;
         for (int i = 0; i < 8; i++)
@@ -185,16 +189,29 @@ static class MoveCalculator
         {
             res.Add(new Move(-1, dir, x, y, board[x, y], board[x - 1, y + dir]));
         }
-
-        if (false) // TODO: insert en passant here
+        if (!lastMove.Equals(default)) 
         {
-
+            if (lastMove.piece.ToLower() == "pawn" && Math.Abs(lastMove.dy) >= 2)
+            {
+                if (lastMove.dx + lastMove.startx == (x + 1) && lastMove.dy + lastMove.starty == y)
+                {
+                    res.Add(new Move(
+                        1, dir, x, y, board[x, y], 
+                        board[x + 1, y + dir], 
+                        new List<Move>() { new Move(1, 0, x, y, board[x,y], board[x + 1, y])}
+                        ));
+                }
+                else if (lastMove.dx + lastMove.startx == (x - 1) && lastMove.dy + lastMove.starty == y)
+                {
+                    res.Add(new Move(
+                        -1, dir, x, y, board[x, y],
+                        board[x - 1, y + dir],
+                        new List<Move>() { new Move(-1, 0, x, y, board[x, y], board[x + 1, y]) }
+                        ));
+                }
+                // TODO: insert en passant here
+            }
         }
-        if (false) // TODO: insert upgrade behaviour here
-        {
-
-        }
-
 
         return res;
     }

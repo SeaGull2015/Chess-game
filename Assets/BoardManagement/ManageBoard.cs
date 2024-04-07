@@ -49,7 +49,9 @@ public partial class ManageBoard : MonoBehaviour
     private int timeTillRestart = 5;
     private int timeTillEffect = 1;
     private bool effectDone = false;
-    private float time = 0; 
+    private float time = 0;
+
+    private Move lastMove;
 
 
     // Update is called once per frame

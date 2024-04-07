@@ -189,11 +189,11 @@ public partial class ManageBoard
                 isWhiteAI = true;
                 break;
             case "Medium":
-                whiteAI = new AlphaBetaOpponentInt(2, false);
+                whiteAI = new AlphaBetaOpponentInt(2, true);
                 isWhiteAI = true;
                 break;
             case "Hard":
-                whiteAI = new AlphaBetaOpponentInt(4, false);
+                whiteAI = new AlphaBetaOpponentInt(4, true);
                 isWhiteAI = true;
                 break;
             default:

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -32,7 +33,7 @@ public partial class ManageBoard
             }
         }
 
-        moves = MoveCalculator.generateAllMoves(board, whiteTurn); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
+        moves = MoveCalculator.generateAllMoves(board, whiteTurn, lastMove); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
         // actually no, the previous check controls player input, depending on whether it's ai turn or nay
         // gotta also make a lister out of it instead of running it twice for ai
         if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
@@ -40,11 +41,11 @@ public partial class ManageBoard
             Move epicMove;
             if (whiteTurn)
             {
-                epicMove = whiteAI.getMove(true, board, MoveCalculator.generateAllMovesListInterestingFirst(board, true));
+                epicMove = whiteAI.getMove(true, board, MoveCalculator.generateAllMovesListInterestingFirst(board, true, lastMove));
             }
             else
             {
-                epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false));
+                epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false, lastMove));
             }
             MakeMove(epicMove);
             checkKingDeath(epicMove);
@@ -87,7 +88,9 @@ public partial class ManageBoard
         int posxTo = Convert.ToInt32(to.x - startpositionX);
         int posyTo = Convert.ToInt32(to.y - startpositionY);
 
+        lastMove = new Move(posxTo - posxFrom, posyTo - posyFrom, posxFrom, posyFrom, who.name, board[posxTo, posyTo]);
         checkKingDeath(board[posxTo, posyTo]);
+        checkEnPassant(posxFrom, posyFrom, posxTo-posxFrom, posyTo - posyFrom, who.name);
 
         pieces[posxFrom, posyFrom] = null;
         pieces[posxTo, posyTo] = who;
@@ -98,6 +101,17 @@ public partial class ManageBoard
         //squares[posxTo, posyTo].lightUp(Color.red);
 
         nextMove();
+    }
+
+    private void checkEnPassant(int sx, int sy, int dx, int dy, string who)
+    {
+        if (who.ToLower() == "pawn") // this kinda sucks
+        {
+            if (Math.Abs(dx) > 0 && board[sx + dx, sy + dy] == "empty")
+            {
+                eatPiece(sx + dx, sy);
+            }
+        }
     }
 
     private void eatPiece(int x, int y)
@@ -130,6 +144,7 @@ public partial class ManageBoard
         {
             promote(targX, targY, "queen");
         }
+        lastMove = mv;
         //nextMove();
     }
     
