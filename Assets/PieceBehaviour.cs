@@ -110,7 +110,7 @@ public class PieceBehaviour : MonoBehaviour
         if (canMove && !selectionInProgress)
         {
             board.lightDownSquares(initPoint);
-            if (isCollided && (collisionPiece.transform.position - new Vector3(0, 0, 1) != initPoint))
+            if (isCollided && (collisionPiece.transform.position - new Vector3(0, 0, 1) != initPoint) && board.checkeMovePossibility(initPoint, collisionPiece.transform.position, this))
             {
                 transform.position = collisionPiece.transform.position - new Vector3(0, 0, 1);
                 moveToExtract = true;

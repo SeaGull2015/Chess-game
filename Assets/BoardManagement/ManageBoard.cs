@@ -115,4 +115,20 @@ public partial class ManageBoard : MonoBehaviour
         if (toWhite) { return what.ToLower(); }
         else return what.ToUpper();
     }
+
+    public bool checkeMovePossibility(Vector3 from, Vector3 to, PieceBehaviour who)
+    {
+        int posxFrom = Convert.ToInt32(from.x - startpositionX);
+        int posyFrom = Convert.ToInt32(from.y - startpositionY);
+        int posxTo = Convert.ToInt32(to.x - startpositionX);
+        int posyTo = Convert.ToInt32(to.y - startpositionY);
+
+        Move tmove = new Move(posxTo - posxFrom, posyTo - posyFrom, posxFrom, posyFrom, who.name, board[posxTo, posyTo]);
+
+        foreach (Move mv in moves[posxFrom, posyFrom])
+        {
+            if (mv.Equals(tmove)) return true;
+        }
+        return false;
+    }
 }
