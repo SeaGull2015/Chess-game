@@ -36,10 +36,20 @@ class virtualBoardInt
         pieceCountArray[board[mv.startx + mv.dx, mv.starty + mv.dy]]--;
         if (mv.additionalTargets != null)
         {
-            foreach (var targ in mv.additionalTargets)
+            if ((mv.piece & MoveCalculatorInt.kingID) == MoveCalculatorInt.kingID) 
             {
-                board[targ.startx + targ.dx, targ.starty + targ.dy] = MoveCalculatorInt.emptyID;
-                pieceCountArray[board[mv.startx + mv.dx, mv.starty + mv.dy]]--;
+                foreach(var targ in mv.additionalTargets) // separate cycle cause I don't wanna to do a check every time
+                {
+                    virtualMove(targ);
+                }
+            }
+            else
+            {
+                foreach (var targ in mv.additionalTargets)
+                {
+                    board[targ.startx + targ.dx, targ.starty + targ.dy] = MoveCalculatorInt.emptyID;
+                    pieceCountArray[board[mv.startx + mv.dx, mv.starty + mv.dy]]--;
+                }
             }
         }
 
@@ -51,10 +61,20 @@ class virtualBoardInt
     {
         if (mv.additionalTargets != null)
         {
-            foreach (var targ in mv.additionalTargets)
+            if ((mv.piece & MoveCalculatorInt.kingID) == MoveCalculatorInt.kingID)
             {
-                board[targ.startx + targ.dx, targ.starty + targ.dy] = targ.target;
-                pieceCountArray[board[targ.startx + targ.dx, targ.starty + targ.dy]]++;
+                foreach (var targ in mv.additionalTargets)
+                {
+                    virtualUnMove(targ);
+                }
+            }
+            else
+            {
+                foreach (var targ in mv.additionalTargets)
+                {
+                    board[targ.startx + targ.dx, targ.starty + targ.dy] = targ.target;
+                    pieceCountArray[board[targ.startx + targ.dx, targ.starty + targ.dy]]++;
+                }
             }
         }
         board[mv.startx, mv.starty] = board[mv.startx + mv.dx, mv.starty + mv.dy];
@@ -114,13 +134,6 @@ public class AlphaBetaOpponentInt : AItemplate
     private int countPieces(int offsetIndex)
     {
         int rs = 0;
-        //vboard.recount(); // something's wrong with counting, so I recount
-        //rs += vboard.pawnsCount[colourIndex] * pieceValuePairs["pawn"];
-        //rs += vboard.knightCount[colourIndex] * pieceValuePairs["knight"];
-        //rs += vboard.bishopCount[colourIndex] * pieceValuePairs["bishop"];
-        //rs += vboard.rookCount[colourIndex] * pieceValuePairs["rook"];
-        //rs += vboard.queenCount[colourIndex] * pieceValuePairs["queen"];
-        //rs += vboard.kingCount[colourIndex] * pieceValuePairs["king"];
         foreach (var ID in MoveCalculatorInt.IDtypeArray)
         {
             rs += vboard.pieceCountArray[ID + offsetIndex] * pieceValuePairsArray[ID];
@@ -144,7 +157,6 @@ public class AlphaBetaOpponentInt : AItemplate
 
             int eval = -search(depth - 1, -alpha, -beta, !whiteTurn);
             eval += piecePositionPairsArray[mv.piece][mv.starty + mv.dy, mv.startx + mv.dx];
-#warning piecePositionPairs eat a lot of performance, please find another way to work with this
 
             vboard.virtualUnMove(mv);
             if (eval >= beta) return beta;

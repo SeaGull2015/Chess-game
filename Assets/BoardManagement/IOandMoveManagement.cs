@@ -33,7 +33,7 @@ public partial class ManageBoard
             }
         }
 
-        moves = MoveCalculator.generateAllMoves(board, whiteTurn, lastMove); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
+        moves = MoveCalculator.generateAllMoves(board, whiteTurn, lastMove, castlesAllowed); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
         // actually no, the previous check controls player input, depending on whether it's ai turn or nay
         // gotta also make a lister out of it instead of running it twice for ai
         if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
@@ -41,11 +41,11 @@ public partial class ManageBoard
             Move epicMove;
             if (whiteTurn)
             {
-                epicMove = whiteAI.getMove(true, board, MoveCalculator.generateAllMovesListInterestingFirst(board, true, lastMove));
+                epicMove = whiteAI.getMove(true, board, MoveCalculator.generateAllMovesListInterestingFirst(board, true, lastMove, castlesAllowed));
             }
             else
             {
-                epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false, lastMove));
+                epicMove = blackAI.getMove(false, board, MoveCalculator.generateAllMovesListInterestingFirst(board, false, lastMove, castlesAllowed));
             }
             MakeMove(epicMove);
             checkKingDeath(epicMove);
@@ -90,7 +90,9 @@ public partial class ManageBoard
 
         lastMove = new Move(posxTo - posxFrom, posyTo - posyFrom, posxFrom, posyFrom, who.name, board[posxTo, posyTo]);
         checkKingDeath(board[posxTo, posyTo]);
-        checkEnPassant(posxFrom, posyFrom, posxTo-posxFrom, posyTo - posyFrom, who.name);
+        checkEnPassant(posxFrom, posyFrom, posxTo - posxFrom, posyTo - posyFrom, who.name);
+        checkCastlesChange(posxFrom, posyFrom, posxTo - posxFrom, posyTo - posyFrom, who.name);
+        checkCastleDone(posxFrom, posyFrom, posxTo - posxFrom, posyTo - posyFrom, who.name);
 
         pieces[posxFrom, posyFrom] = null;
         pieces[posxTo, posyTo] = who;
@@ -114,6 +116,49 @@ public partial class ManageBoard
         }
     }
 
+    private void checkCastlesChange(int sx, int sy, int dx, int dy, string who)
+    {
+        if (who.ToLower() == "king") castlesAllowed.voidUniversal(who);
+        if (who.ToLower() == "rook")
+        {
+            if (isWhite(who))
+            {
+                if (sx == 0) castlesAllowed.leftWhite = false;
+                else castlesAllowed.rightWhite = false;
+            }
+            else
+            {
+                if (sx == 0) castlesAllowed.leftBlack = false;
+                else castlesAllowed.rightBlack = false;
+            }
+        }
+    }
+    
+    private void checkCastleDone(int sx, int sy, int dx, int dy, string who)
+    {
+        if (who.ToLower() == "king" && Math.Abs(dx) > 1)
+        {
+            if (dx < 0) // left castle
+            {
+                pieces[0, sy].move(sx - 1, 0);
+
+                pieces[sx - 1, sy] = pieces[0, sy];
+                pieces[0, sy] = null;
+                board[sx - 1, sy] = board[0, sy];
+                board[0, sy] = "empty";
+            }
+            else
+            {
+                pieces[7, sy].move(sx + 1 - 7, 0);
+
+                pieces[sx + 1, sy] = pieces[7, sy];
+                pieces[7, sy] = null;
+                board[sx + 1, sy] = board[7, sy];
+                board[7, sy] = "empty";
+            }
+        }
+    }
+
     private void eatPiece(int x, int y)
     {
         board[x, y] = "empty";
@@ -124,14 +169,18 @@ public partial class ManageBoard
     {
         int targX = mv.startx + mv.dx;
         int targY = mv.starty + mv.dy;
-        if (mv.additionalTargets != null) // this should be a basis for en passant? idk
+        if (mv.additionalTargets != null) 
         {
+            
             foreach (Move target in mv.additionalTargets)
             {
-                eatPiece(target.startx + target.dx, target.starty + target.dy);
+                if (mv.piece.ToLower() == "king") MakeMove(target); // bruh
+                else eatPiece(target.startx + target.dx, target.starty + target.dy);
             }
         }
-        // TODO: add logic for castling aka rokirovka (duh)
+
+        checkCastlesChange(mv.startx, mv.starty, mv.dx, mv.dy, mv.piece);
+
         if (board[targX, targY] != "empty") eatPiece(targX, targY);
         board[targX, targY] = board[mv.startx, mv.starty];
         board[mv.startx, mv.starty] = "empty";

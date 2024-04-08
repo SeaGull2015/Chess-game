@@ -67,6 +67,7 @@ public partial class ManageBoard
         };
 
         int stage = 0;
+        bool[] castles = new bool[4]; // left black, right black, left white, right white.
         foreach (char c in FENinp)
         {
             if (c == ' ')
@@ -121,9 +122,11 @@ public partial class ManageBoard
                 else if (c == 'k') { castles[1] = true; }
                 else if (c == 'Q') { castles[2] = true; }
                 else if (c == 'K') { castles[3] = true; }
+                
             }
             // there is other stuff in FEN, but I don't want to implement it.
         }
+        castlesAllowed = new Castling(castles);
 
         return res;
     }

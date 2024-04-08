@@ -40,10 +40,7 @@ public partial class ManageBoard : MonoBehaviour
     private List<Move>[,] moves = new List<Move>[8,8];
     private int moveCounter;
     private string defStart = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    private bool[] castles = new bool[4]
-    {
-        false, false, false, false
-    }; // left black, right black, left white, right white.
+    private Castling castlesAllowed;
     private System.Random rnd = new System.Random();
     private bool gameRestart = false;
     private int timeTillRestart = 5;

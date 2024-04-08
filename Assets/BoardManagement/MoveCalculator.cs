@@ -9,12 +9,14 @@ static class MoveCalculator
 {
     static string[,] board = new string[8, 8];
     static Move lastMove;
+    static Castling castles;
 
-    static public List<Move>[,] generateAllMoves(string[,] brd, bool whiteTurn, Move lstMv = new Move())
+    static public List<Move>[,] generateAllMoves(string[,] brd, bool whiteTurn, Move lstMv = new Move(), Castling castle = new Castling())
     {
         lastMove = lstMv;
         List<Move>[,] moves = new List<Move>[8,8];
         board = brd;
+        castles = castle;
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -33,11 +35,12 @@ static class MoveCalculator
         return moves;
     }
 
-    static public List<Move> generateAllMovesList(string[,] brd, bool whiteTurn, Move lstMv = new Move())
+    static public List<Move> generateAllMovesList(string[,] brd, bool whiteTurn, Move lstMv = new Move(), Castling castle = new Castling())
     {
         lastMove = lstMv;
         List<Move> moves = new List<Move>();
         board = brd;
+        castles = castle;
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -52,11 +55,12 @@ static class MoveCalculator
         return moves;
     }
 
-    static public List<Move> generateAllMovesListInterestingFirst(string[,] brd, bool whiteTurn, Move lstMv = new Move())
+    static public List<Move> generateAllMovesListInterestingFirst(string[,] brd, bool whiteTurn, Move lstMv = new Move(), Castling castle = new Castling())
     {
         lastMove = lstMv;
         List<Move> moves = new List<Move>();
         board = brd;
+        castles = castle;
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -235,6 +239,86 @@ static class MoveCalculator
             }
         }
 
+        int[] dirs = dirLen(x, y);
+        if (ManageBoard.isWhite(board[x, y])) // castling // this majorly sucks
+        {
+            if (castles.leftWhite)
+            {
+                bool clear = true;
+                for (int i = 1; i < dirs[3]; i++)
+                {
+                    if (board[x - i, y] != "empty")
+                    {
+                        clear = false;
+                        break;
+                    }
+                }
+                if (clear)
+                {
+                    List<Move> tmoves = new List<Move>();
+                    tmoves.Add(new Move(3, 0, x - dirs[3], y, board[x - dirs[3], y], board[x - 1, y]));
+                    res.Add(new Move(-2, 0, x, y, board[x, y], board[x - 2, y], tmoves));
+                }
+            }
+            if (castles.rightWhite)
+            {
+                bool clear = true;
+                for (int i = 1; i < dirs[1]; i++)
+                {
+                    if (board[x + i, y] != "empty")
+                    {
+                        clear = false;
+                        break;
+                    }
+                }
+                if (clear)
+                {
+                    List<Move> tmoves = new List<Move>();
+                    tmoves.Add(new Move(-2, 0, x + dirs[1], y, board[x + dirs[1], y], board[x - 1, y]));
+                    res.Add(new Move(2, 0, x, y, board[x, y], board[x + 2, y], tmoves));
+                }
+            }
+        }
+        else
+        {
+            if (castles.leftBlack)
+            {
+                bool clear = true;
+                for (int i = 1; i < dirs[3]; i++)
+                {
+                    if (board[x - i, y] != "empty")
+                    {
+                        clear = false;
+                        break;
+                    }
+                }
+                if (clear)
+                {
+                    List<Move> tmoves = new List<Move>();
+                    tmoves.Add(new Move(3, 0, x - dirs[3], y, board[x - dirs[3], y], board[x - 1, y]));
+                    res.Add(new Move(-2, 0, x, y, board[x, y], board[x - 2, y], tmoves));
+                }
+            }
+            if (castles.rightBlack)
+            {
+                bool clear = true;
+                for (int i = 1; i < dirs[1]; i++)
+                {
+                    if (board[x + i, y] != "empty")
+                    {
+                        clear = false;
+                        break;
+                    }
+                }
+                if (clear)
+                {
+                    List<Move> tmoves = new List<Move>();
+                    tmoves.Add(new Move(-2, 0, x + dirs[1], y, board[x + dirs[1], y], board[x - 1, y]));
+                    res.Add(new Move(2, 0, x, y, board[x, y], board[x + 2, y], tmoves));
+                }
+            }
+        }
+
         return res;
     }
 
@@ -261,7 +345,7 @@ static class MoveCalculator
     }
     static private int[] dirLen(int x, int y)
     {
-        int[] res = new int[8];
+        int[] res = new int[8]; // probably should have made aliases, as in res[north], where int north = 0
         res[0] = 7 - y; // north
         res[1] = 7 - x; // east
         res[2] = y; // south
