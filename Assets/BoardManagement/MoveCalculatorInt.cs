@@ -25,6 +25,10 @@ using UnityEngine;
 //    {"KING", 20000}, 192
 //    {"empty", 0} 0
 //}
+
+/// <summary>
+/// This class is functionally very similiar to the MoveCalculator, but works 3 times faster and doesn't use en passant and castling as a possible calc move due to reasons
+/// </summary>
 static class MoveCalculatorInt
 {
     static int[,] board = new int[8, 8];

@@ -4,11 +4,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class gameStarter : MonoBehaviour
+/// This is the class that manages the main menu, game start
+public class gameStarter : MonoBehaviour 
 {
     // Start is called before the first frame update
     public TMP_Dropdown blackdropdown;
     public TMP_Dropdown whitedropdown;
+
+    /// <summary>
+    ///  Start up function sets up saved dropdown settings, when the main menu game scene is loaded
+    /// </summary>
     void Start()
     {
         int black = PlayerPrefs.GetInt("blackAIval");
@@ -23,6 +28,10 @@ public class gameStarter : MonoBehaviour
         
     }
 
+
+    /// <summary>
+    /// Game start happens when the start button is pressed. Starting the game saves the chosen options of the game into permanent storage and loads the game scene.
+    /// </summary>
     public void gameStart()
     {
         PlayerPrefs.SetString("blackAIstr", blackdropdown.options[blackdropdown.value].text);

@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
+
+/// <summary>
+/// virtualBoardInt, but worse in terms of performance. Good target for deletion.
+/// </summary>
 class virtualBoard
 {
     public string[,] board = new string[8, 8]; // "pawn", "knight", "bishop", "rook", "queen", "king"
@@ -94,6 +98,10 @@ class virtualBoard
     }
 
 }
+
+/// <summary>
+/// Obsolete AI that is very naive and bad, but should still work. AlphaBetaOpponentInt is the most modern iteration of this.
+/// </summary>
 public class EvalOpponent : AItemplate
 {
     private virtualBoard vboard = new virtualBoard();

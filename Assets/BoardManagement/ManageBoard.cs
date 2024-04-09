@@ -9,10 +9,11 @@ using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
 
 
+/// <summary>
+/// Manages the chessboard and game logic.
+/// </summary>
 public partial class ManageBoard : MonoBehaviour
 {
-
-    // Start is called before the first frame update
     public GameObject square;
     public GameObject boardPiece;
     public float startpositionX = -3.5f;
@@ -32,12 +33,12 @@ public partial class ManageBoard : MonoBehaviour
     public TMP_Text indexPrefab;
     public Canvas canvi;
 
-    private string[,] board = new string[8,8];
-    private SquareBehaviour[,] squares = new SquareBehaviour[8,8];
-    private PieceBehaviour[,] pieces = new PieceBehaviour[8,8];
+    private string[,] board = new string[8, 8];
+    private SquareBehaviour[,] squares = new SquareBehaviour[8, 8];
+    private PieceBehaviour[,] pieces = new PieceBehaviour[8, 8];
     private List<PieceBehaviour> whitePieces = new List<PieceBehaviour>();
     private List<PieceBehaviour> blackPieces = new List<PieceBehaviour>();
-    private List<Move>[,] moves = new List<Move>[8,8];
+    private List<Move>[,] moves = new List<Move>[8, 8];
     private int moveCounter;
     private string defStart = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     private Castling castlesAllowed;
@@ -50,14 +51,13 @@ public partial class ManageBoard : MonoBehaviour
 
     private Move lastMove;
 
-
     // Update is called once per frame
     void Update()
     {
         time += Time.deltaTime;
         if (gameRestart)
         {
-            if (time > timeTillEffect) // nested ifs cause I don't wanna go in the else if thing if it's not time yet
+            if (time > timeTillEffect)
             {
                 if (!effectDone) gameoverEffect();
                 if (time > timeTillRestart)
@@ -77,6 +77,11 @@ public partial class ManageBoard : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if a pawn needs to be promoted.
+    /// </summary>
+    /// <param name="who">The pawn to check.</param>
+    /// <returns>True if promotion is needed, otherwise false.</returns>
     public bool checkPromotion(PieceBehaviour who)
     {
         if (who.getType().ToLower() != "pawn") return false;
@@ -90,7 +95,12 @@ public partial class ManageBoard : MonoBehaviour
             return false;
         }
     }
-    
+
+    /// <summary>
+    /// Promotes a pawn to a different piece.
+    /// </summary>
+    /// <param name="who">The pawn to promote.</param>
+    /// <param name="toWhat">The piece type to promote to.</param>
     public void promote(PieceBehaviour who, string toWhat)
     {
         if (!who.allowedTypes.Contains(toWhat)) throw new Exception("failed promotion - incorrect type");
@@ -98,24 +108,43 @@ public partial class ManageBoard : MonoBehaviour
         int posy = Convert.ToInt32(who.initPoint.y - startpositionY);
         who.setType(toWhat);
 
-        board[posx, posy] = setColour(toWhat, who.isWhite);        
+        board[posx, posy] = setColour(toWhat, who.isWhite);
     }
 
+    /// <summary>
+    /// Promotes a pawn at a specific position to a different piece.
+    /// </summary>
+    /// <param name="x">The x-coordinate of the pawn.</param>
+    /// <param name="y">The y-coordinate of the pawn.</param>
+    /// <param name="toWhat">The piece type to promote to.</param>
     public void promote(int x, int y, string toWhat)
     {
         int posx = x;
         int posy = y;
-        pieces[x,y].setType(toWhat);
+        pieces[x, y].setType(toWhat);
 
-        board[posx, posy] = setColour(toWhat, isWhite(board[x,y]));
+        board[posx, posy] = setColour(toWhat, isWhite(board[x, y]));
     }
 
+    /// <summary>
+    /// Sets the color of the piece based on player color.
+    /// </summary>
+    /// <param name="what">The piece type.</param>
+    /// <param name="toWhite">Whether the piece belongs to the white player.</param>
+    /// <returns>The piece type with appropriate casing.</returns>
     private string setColour(string what, bool toWhite)
     {
         if (toWhite) { return what.ToLower(); }
         else return what.ToUpper();
     }
 
+    /// <summary>
+    /// Checks if a move is possible for a piece.
+    /// </summary>
+    /// <param name="from">The starting position of the piece.</param>
+    /// <param name="to">The destination position of the piece.</param>
+    /// <param name="who">The piece making the move.</param>
+    /// <returns>True if the move is possible, otherwise false.</returns>
     public bool checkeMovePossibility(Vector3 from, Vector3 to, PieceBehaviour who)
     {
         int posxFrom = Convert.ToInt32(from.x - startpositionX);

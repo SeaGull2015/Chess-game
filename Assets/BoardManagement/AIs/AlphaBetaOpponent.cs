@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
+/// <summary>
+/// AlphaBetaOpponentInt, but worse in every single way. Good target for deletion.
+/// </summary>
 public class AlphaBetaOpponent : AItemplate
 {
     private virtualBoard vboard = new virtualBoard();

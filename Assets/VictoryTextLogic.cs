@@ -4,6 +4,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// Displays text on gameover.
+/// </summary>
 public class VictoryTextLogic : MonoBehaviour
 {
     public TMP_Text UIText;

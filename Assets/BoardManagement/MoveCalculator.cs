@@ -4,13 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-
+/// <summary>
+/// Static class responsible for calculating all possible moves for pieces on the chessboard.
+/// </summary>
 static class MoveCalculator
 {
     static string[,] board = new string[8, 8];
     static Move lastMove;
     static Castling castles;
-
+    /// <summary>
+    /// Generates all possible moves for pieces on the chessboard.
+    /// </summary>
+    /// <param name="brd">The current state of the chessboard.</param>
+    /// <param name="whiteTurn">Indicates whether it's currently the white player's turn.</param>
+    /// <param name="lstMv">The last move made.</param>
+    /// <param name="castle">The castling availability.</param>
+    /// <returns>A 2D array of lists of moves for each square on the chessboard.</returns>
     static public List<Move>[,] generateAllMoves(string[,] brd, bool whiteTurn, Move lstMv = new Move(), Castling castle = new Castling())
     {
         lastMove = lstMv;
@@ -34,7 +43,14 @@ static class MoveCalculator
         }
         return moves;
     }
-
+    /// <summary>
+    /// Generates all possible moves for pieces on the chessboard and returns them in a list.
+    /// </summary>
+    /// <param name="brd">The current state of the chessboard.</param>
+    /// <param name="whiteTurn">Indicates whether it's currently the white player's turn.</param>
+    /// <param name="lstMv">The last move made.</param>
+    /// <param name="castle">The castling availability.</param>
+    /// <returns>A list of all possible moves.</returns>
     static public List<Move> generateAllMovesList(string[,] brd, bool whiteTurn, Move lstMv = new Move(), Castling castle = new Castling())
     {
         lastMove = lstMv;
@@ -54,7 +70,14 @@ static class MoveCalculator
         }
         return moves;
     }
-
+    /// <summary>
+    /// Generates all possible moves for pieces on the chessboard and returns them in a list, sorting moves with higher value targets first.
+    /// </summary>
+    /// <param name="brd">The current state of the chessboard.</param>
+    /// <param name="whiteTurn">Indicates whether it's currently the white player's turn.</param>
+    /// <param name="lstMv">The last move made.</param>
+    /// <param name="castle">The castling availability.</param>
+    /// <returns>A list of all possible moves, with moves targeting higher value pieces first.</returns>
     static public List<Move> generateAllMovesListInterestingFirst(string[,] brd, bool whiteTurn, Move lstMv = new Move(), Castling castle = new Castling())
     {
         lastMove = lstMv;

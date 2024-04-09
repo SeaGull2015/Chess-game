@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+///  This class is functionally very similiar to Move class, but is used for faster calculation
+/// </summary>
 public struct MoveInt
 {
     public int startx;

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Random opponent - returs a random move.
+/// </summary>
 public class RandomerOpponent : AItemplate
 {
     private System.Random rnd = new System.Random();

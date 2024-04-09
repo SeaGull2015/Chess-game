@@ -10,6 +10,9 @@ using static UnityEngine.GraphicsBuffer;
 
 public partial class ManageBoard
 {
+    /// <summary>
+    /// Manages the next move in the game, including controlling piece movement and AI decisions.
+    /// </summary>
     private void nextMove()
     {
         if (gameRestart)
@@ -34,8 +37,8 @@ public partial class ManageBoard
         }
 
         moves = MoveCalculator.generateAllMoves(board, whiteTurn, lastMove, castlesAllowed); // specifically, this probably makes the previous check useless, because pieces without moves shouldn't be able to move
-        // actually no, the previous check controls player input, depending on whether it's ai turn or nay
-        // gotta also make a lister out of it instead of running it twice for ai
+                                                                                             // actually no, the previous check controls player input, depending on whether it's ai turn or nay
+                                                                                             // gotta also make a lister out of it instead of running it twice for ai
         if ((whiteTurn && isWhiteAI) || (!whiteTurn && isBlackAI))
         {
             Move epicMove;
@@ -53,6 +56,10 @@ public partial class ManageBoard
 
         whiteTurn = !whiteTurn;
     }
+
+    /// <summary>
+    /// Highlights available squares for movement.
+    /// </summary>
     public void lightUpSquares(Vector3 where)
     {
         int x = Convert.ToInt32(where.x - startpositionX);
@@ -65,6 +72,9 @@ public partial class ManageBoard
         }
     }
 
+    /// <summary>
+    /// Removes highlights from squares.
+    /// </summary>
     public void lightDownSquares(Vector3 where)
     {
         int x = Convert.ToInt32(where.x - startpositionX);
@@ -76,11 +86,17 @@ public partial class ManageBoard
         }
     }
 
+    /// <summary>
+    /// Checks if the piece color is white.
+    /// </summary>
     public static bool isWhite(string s)
     {
         return char.IsLower(s[0]);
     }
 
+    /// <summary>
+    /// Extracts move information and updates game state accordingly.
+    /// </summary>
     public void extractMove(Vector3 from, Vector3 to, PieceBehaviour who)
     {
         int posxFrom = Convert.ToInt32(from.x - startpositionX);
@@ -99,12 +115,13 @@ public partial class ManageBoard
 
         board[posxTo, posyTo] = board[posxFrom, posyFrom];
         board[posxFrom, posyFrom] = "empty";
-        //pieces[posxTo, posyTo].setColor(Color.red);
-        //squares[posxTo, posyTo].lightUp(Color.red);
 
         nextMove();
     }
 
+    /// <summary>
+    /// Checks for en passant move possibility.
+    /// </summary>
     private void checkEnPassant(int sx, int sy, int dx, int dy, string who)
     {
         if (who.ToLower() == "pawn") // this kinda sucks
@@ -116,6 +133,9 @@ public partial class ManageBoard
         }
     }
 
+    /// <summary>
+    /// Updates castling availability.
+    /// </summary>
     private void checkCastlesChange(int sx, int sy, int dx, int dy, string who)
     {
         if (who.ToLower() == "king") castlesAllowed.voidUniversal(who);
@@ -133,7 +153,10 @@ public partial class ManageBoard
             }
         }
     }
-    
+
+    /// <summary>
+    /// Performs castling if the move is a castle.
+    /// </summary>
     private void checkCastleDone(int sx, int sy, int dx, int dy, string who)
     {
         if (who.ToLower() == "king" && Math.Abs(dx) > 1)
@@ -159,19 +182,25 @@ public partial class ManageBoard
         }
     }
 
+    /// <summary>
+    /// Removes a piece from the board and game.
+    /// </summary>
     private void eatPiece(int x, int y)
     {
         board[x, y] = "empty";
         Destroy(pieces[x, y].gameObject);
     }
 
+    /// <summary>
+    /// Makes a move on the board.
+    /// </summary>
     private void MakeMove(Move mv)
     {
         int targX = mv.startx + mv.dx;
         int targY = mv.starty + mv.dy;
-        if (mv.additionalTargets != null) 
+        if (mv.additionalTargets != null)
         {
-            
+
             foreach (Move target in mv.additionalTargets)
             {
                 if (mv.piece.ToLower() == "king") MakeMove(target); // bruh
@@ -194,9 +223,11 @@ public partial class ManageBoard
             promote(targX, targY, "queen");
         }
         lastMove = mv;
-        //nextMove();
     }
-    
+
+    /// <summary>
+    /// Removes a piece from the corresponding list.
+    /// </summary>
     public void removePieceFromLists(PieceBehaviour pc)
     {
         if (pc.isWhite)
@@ -209,6 +240,9 @@ public partial class ManageBoard
         }
     }
 
+    /// <summary>
+    /// Adds a piece to the corresponding list.
+    /// </summary>
     public void addPieceToLists(PieceBehaviour pc)
     {
         if (pc.isWhite)
@@ -221,6 +255,9 @@ public partial class ManageBoard
         }
     }
 
+    /// <summary>
+    /// Stops all piece movements.
+    /// </summary>
     public void triggerStop()
     {
         foreach (var pieces in pieces)

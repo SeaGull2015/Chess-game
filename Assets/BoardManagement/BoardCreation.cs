@@ -10,19 +10,28 @@ using static UnityEngine.GraphicsBuffer;
 
 public partial class ManageBoard
 {
+    /// <summary>
+    /// Initializes the AI opponents based on player preferences and sets up the initial game board if needed.
+    /// </summary>
     void Start()
     {
         setAI();
+
         if (needBoard)
         {
             createBoard();
             board = FEN(defStart);
             putPieces(board);
         }
+
         if (isWhiteAI && isBlackAI) { timeBetweenAIMoves = 0.4f; }
         if (isWhiteAI) Invoke("nextMove", 0.1f);
         if (!isWhiteAI && !isBlackAI) Invoke("nextMove", 0.1f);
     }
+
+    /// <summary>
+    /// Creates the game board by instantiating square objects and setting up their positions.
+    /// </summary>
     void createBoard()
     {
         for (int tY = 0; tY < 8; tY++)
@@ -40,7 +49,7 @@ public partial class ManageBoard
                 if (tX == 0)
                 {
                     TMP_Text txt = Instantiate(indexPrefab, Camera.main.WorldToScreenPoint(transform.position + new Vector3(tX + startpositionX - 1, tY + startpositionY, +1)), transform.rotation, canvi.transform);
-                    txt.SetText((tY+1).ToString());
+                    txt.SetText((tY + 1).ToString());
                 }
                 if (tY == 0)
                 {
@@ -51,23 +60,29 @@ public partial class ManageBoard
         }
     }
 
+    /// <summary>
+    /// Parses the FEN string to set up the initial board configuration.
+    /// </summary>
+    /// <param name="FENinp">The FEN string representing the board configuration.</param>
+    /// <returns>A 2D array representing the board state.</returns>
     string[,] FEN(string FENinp)
     {
         int x = 0, y = 0;
         string tempPiece = "";
         string[,] res = new string[8, 8];
         Dictionary<char, string> pieceTypes = new Dictionary<char, string>
-        {
-            {'p', "pawn"},
-            {'n', "knight"},
-            {'b', "bishop"},
-            {'r', "rook"},
-            {'q', "queen"},
-            {'k', "king"},
-        };
+    {
+        {'p', "pawn"},
+        {'n', "knight"},
+        {'b', "bishop"},
+        {'r', "rook"},
+        {'q', "queen"},
+        {'k', "king"},
+    };
 
         int stage = 0;
         bool[] castles = new bool[4]; // left black, right black, left white, right white.
+
         foreach (char c in FENinp)
         {
             if (c == ' ')
@@ -75,6 +90,7 @@ public partial class ManageBoard
                 stage++;
                 continue;
             }
+
             if (stage == 0)
             {
                 if (char.IsNumber(c))
@@ -107,11 +123,13 @@ public partial class ManageBoard
                     throw new Exception("wrong fen string");
                 }
             }
+
             if (stage == 1)
             {
                 if (c == 'w') whiteTurn = true;
                 else if (c == 'b') whiteTurn = false;
             }
+
             if (stage == 2)
             {
                 if (c == '-')
@@ -122,15 +140,18 @@ public partial class ManageBoard
                 else if (c == 'k') { castles[1] = true; }
                 else if (c == 'Q') { castles[2] = true; }
                 else if (c == 'K') { castles[3] = true; }
-                
             }
             // there is other stuff in FEN, but I don't want to implement it.
         }
-        castlesAllowed = new Castling(castles);
 
+        castlesAllowed = new Castling(castles);
         return res;
     }
 
+    /// <summary>
+    /// Instantiates pieces on the board based on the provided board configuration.
+    /// </summary>
+    /// <param name="tboard">The 2D array representing the initial board state.</param>
     void putPieces(string[,] tboard)
     {
         for (int tY = 0; tY < tboard.GetLength(0); tY++)
@@ -141,6 +162,7 @@ public partial class ManageBoard
                 GameObject piece = Instantiate(boardPiece, transform.position + new Vector3(tX + startpositionX, tY + startpositionY), transform.rotation);
                 PieceBehaviour pcBehaviour = piece.GetComponent<PieceBehaviour>();
                 pieces[tX, tY] = pcBehaviour;
+
                 if (isWhite(tboard[tX, tY]))
                 {
                     pcBehaviour.isWhite = true;
@@ -148,8 +170,9 @@ public partial class ManageBoard
                 }
                 //else
                 //{
-                //    blackPieces.Add(pcBehaviour);
+                // blackPieces.Add(pcBehaviour);
                 //}
+
                 if (!pcBehaviour.setType(tboard[tX, tY].ToLower()))
                 {
                     throw new Exception("bad type when putting down pieces");
@@ -159,6 +182,9 @@ public partial class ManageBoard
         //nextMove();
     }
 
+    /// <summary>
+    /// Sets up AI opponents based on player preferences.
+    /// </summary>
     void setAI()
     {
         string r = PlayerPrefs.GetString("blackAIstr");

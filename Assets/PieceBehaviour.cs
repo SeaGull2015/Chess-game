@@ -6,6 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// This class manages the behaviour of a select piece on the board.
+/// </summary>
 public class PieceBehaviour : MonoBehaviour
 {
     public BoxCollider2D thisCollider;
@@ -34,7 +37,9 @@ public class PieceBehaviour : MonoBehaviour
     private float extractionTime = 0;
     private bool selectionInProgress = false;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Sets up links to board manager and UI objects, sets up the position of the piece.
+    /// </summary>
     void Start()
     {
         boardManager = GameObject.FindWithTag("boardManager"); ;
@@ -45,12 +50,17 @@ public class PieceBehaviour : MonoBehaviour
 
         dropDown = GameObject.FindObjectsOfType<promotionSelectScript>(true)[0]; 
     }
+    /// <summary>
+    /// Removes the piece from the board's piece lists upon destruction.
+    /// </summary>
     private void OnDestroy()
     {
         board.removePieceFromLists(this);
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Moves the piece according to its movement rules.
+    /// </summary>
     void Update()
     {
         if (movementInProgress)
@@ -75,21 +85,38 @@ public class PieceBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the promotion of the piece.
+    /// </summary>
+    /// <param name="result">The result of the promotion.</param>
     public void recallPromotion(string result)
     {
         board.promote(this, result);
         selectionInProgress = false;
     }
+
+    /// <summary>
+    /// Triggered when the piece collides with another collider.
+    /// </summary>
+    /// <param name="other">The collider the piece collided with.</param>
     private void OnTriggerEnter2D(Collider2D other)
     {
         isCollided = true;
         collisionPiece = other.gameObject;
     }
-    
+
+    /// <summary>
+    /// Triggered when the piece stops colliding with another collider.
+    /// </summary>
+    /// <param name="other">The collider the piece was colliding with.</param>
     private void OnTriggerExit2D(Collider2D other)
     {
         isCollided = false;
     }
+
+    /// <summary>
+    /// Triggered when the mouse button is pressed down while over the piece.
+    /// </summary>
     void OnMouseDown()
     {
         if (canMove && !selectionInProgress)
@@ -100,11 +127,17 @@ public class PieceBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Triggered when the mouse is dragged while over the piece.
+    /// </summary>
     private void OnMouseDrag()
     {
         if (canMove && !selectionInProgress) transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) - clickDragOffset;
     }
 
+    /// <summary>
+    /// Triggered when the mouse button is released after being pressed down while over the piece.
+    /// </summary>
     private void OnMouseUp()
     {
         if (canMove && !selectionInProgress)
@@ -131,6 +164,9 @@ public class PieceBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Eats the collided piece if applicable.
+    /// </summary>
     private void eat()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (thisCollider.size.x + thisCollider.size.y) / 2 * 0.64f);
@@ -146,19 +182,39 @@ public class PieceBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Moves the piece by the given amount.
+    /// </summary>
+    /// <param name="dx">The amount to move along the x-axis.</param>
+    /// <param name="dy">The amount to move along the y-axis.</param>
     public void move(int dx, int dy)
     {
         target = transform.position + new Vector3(dx, dy, 0);
         movementInProgress = true;
     }
 
+    /// <summary>
+    /// Eats a specific piece.
+    /// </summary>
+    /// <param name="Piece">The piece to eat.</param>
     private void eat(GameObject Piece)
     {
         Destroy(Piece);
     }
 
-    public string getType () { return figureType; }
-    public bool setType(string type) { 
+    /// <summary>
+    /// Retrieves the type of the piece.
+    /// </summary>
+    /// <returns>The type of the piece.</returns>
+    public string getType() { return figureType; }
+
+    /// <summary>
+    /// Sets the type of the piece.
+    /// </summary>
+    /// <param name="type">The type to set.</param>
+    /// <returns>True if the type was successfully set, otherwise false.</returns>
+    public bool setType(string type)
+    {
         if (allowedTypes.Contains(type))
         {
             figureType = type;
@@ -169,10 +225,18 @@ public class PieceBehaviour : MonoBehaviour
         else { return false; }
     }
 
+    /// <summary>
+    /// Sets the color of the piece.
+    /// </summary>
+    /// <param name="color">The color to set.</param>
     public void setColor(Color color)
     {
         thisSpriteRenderer.color = color;
     }
+
+    /// <summary>
+    /// Updates the sprite of the piece.
+    /// </summary>
     private void updateSprite()
     {
         thisSpriteRenderer.sprite = sprites[Array.FindIndex(allowedTypes, x => x == figureType)];
@@ -180,7 +244,7 @@ public class PieceBehaviour : MonoBehaviour
         {
             thisSpriteRenderer.color = Color.white;
         }
-        else thisSpriteRenderer.color = Color.grey;   
+        else thisSpriteRenderer.color = Color.grey;
     }
 
 
